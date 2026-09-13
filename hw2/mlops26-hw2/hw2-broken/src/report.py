@@ -224,6 +224,61 @@ def memory_section(report: dict) -> list[str]:
     return lines
 
 
+def defects_section(report: dict) -> list[str]:
+    """Разбор четырёх намеренных дефектов с проверяемыми признаками."""
+    modes = {item["mode"]: item for item in report["memory"]}
+    inference = modes["inference"]
+    full_ft = modes["full_ft"]
+    lora = modes["lora"]
+    tied = sum(item["tied_params"] for item in report["params_by_group"])
+    naive_total = report["params_total"] + tied
+    weights_mb = report["params_total"] * 2 / 1024 ** 2
+
+    return [
+        "## 7. Найденные и исправленные дефекты",
+        "",
+        "### 7.1. Forward-hooks не удалялись",
+        "",
+        "В исходном коде `register_forward_hook()` вызывался без сохранения handle,",
+        "поэтому после каждого разбора на модели оставались ещё три hook. Повторный",
+        "вызов выполнял лишние callback и удерживал связанные объекты в памяти.",
+        "Исправление: handle каждого hook сохраняется, а `handle.remove()` вызывается",
+        "в блоке `finally`; исходный режим train/eval модели также восстанавливается.",
+        "Проверка делает два вызова подряд: после обоих на модулях остаётся 0 hooks.",
+        "",
+        "### 7.2. Tied embeddings считались дважды",
+        "",
+        "`embed_tokens` и `lm_head` ссылаются на один параметр, но обход с",
+        "`remove_duplicate=False` раньше прибавлял его два раза. Наивная сумма дала бы",
+        f"{thousands(naive_total)}, то есть на {thousands(tied)} больше правильных",
+        f"{thousands(report['params_total'])}. Исправление: строки помечаются по `id(param)`,",
+        "и повторный тензор показывается как tied, но не входит в итог. Теперь сумма",
+        "таблицы точно равна `sum(p.numel() for p in model.parameters())`.",
+        "",
+        "### 7.3. Вместо пика снимался остаток памяти",
+        "",
+        "Исходный контекстный менеджер делал `gc.collect()` и только затем один снимок.",
+        "Так измерялось то, что осталось после шага, а не максимальный расход во время",
+        "forward/backward/AdamW. Исправление: CUDA использует встроенный high-water mark,",
+        "MPS опрашивается во время шага, CPU использует системный peak RSS; каждый режим",
+        "запускается в отдельном процессе. После исправления пики различаются:",
+        f"{inference['peak_mb']:.0f} МБ (инференс), {lora['peak_mb']:.0f} МБ (LoRA) и",
+        f"{full_ft['peak_mb']:.0f} МБ (full FT), то есть соблюдается full FT > LoRA > inference.",
+        "",
+        "### 7.4. На ускорителе использовалась RSS процесса",
+        "",
+        "RSS отражает обычную оперативную память процесса и не видит полностью буферы",
+        "MPS/CUDA. Поэтому старые числа слабо реагировали на режим и могли быть меньше",
+        "самих весов. Исправление выбирает метрику по устройству: MPS —",
+        "`torch.mps.driver_allocated_memory`, CUDA — `torch.cuda.max_memory_allocated`,",
+        "CPU — peak RSS.",
+        f"В этом запуске использована `{inference['metric_source']}`; пик инференса",
+        f"{inference['peak_mb']:.0f} МБ, а одни веса bf16 занимают примерно",
+        f"{weights_mb:.0f} МБ, поэтому обязательная нижняя граница соблюдается.",
+        "",
+    ]
+
+
 def markdown_report(report: dict, params: dict) -> str:
     config = report["config"]
     lines = [
@@ -254,6 +309,7 @@ def markdown_report(report: dict, params: dict) -> str:
     lines += activations_section(report, params)
     lines += lora_section(report)
     lines += memory_section(report)
+    lines += defects_section(report)
     return "\n".join(lines)
 
 

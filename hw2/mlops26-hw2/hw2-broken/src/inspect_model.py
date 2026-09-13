@@ -13,7 +13,9 @@ import gc
 import json
 import os
 import platform
+import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -99,13 +101,16 @@ def parameter_rows(model) -> list[dict]:
     remove_duplicate=False — иначе в таблицу не попадёт lm_head.
     """
     rows = []
+    seen: set[int] = set()
     for name, param in model.named_parameters(remove_duplicate=False):
+        identity = id(param)
         rows.append({
             "name": name,
             "shape": tuple(param.shape),
             "numel": param.numel(),
-            "tied": False,
+            "tied": identity in seen,
         })
+        seen.add(identity)
     return rows
 
 
@@ -156,9 +161,10 @@ def hook_targets(model) -> dict[str, int]:
     return {"первый": 0, "средний": n_layers // 2, "последний": n_layers - 1}
 
 
-def forward_hooks(modules: dict) -> dict:
-    """Навесить forward-hooks на модули и вернуть словарь, куда они пишут."""
+def forward_hooks(modules: dict) -> tuple[dict, list]:
+    """Навесить hooks и вернуть хранилище вместе с handle для их удаления."""
     store: dict[str, list[float]] = {}
+    handles = []
 
     def make_hook(label: str):
         def hook(module, args, output):
@@ -167,8 +173,8 @@ def forward_hooks(modules: dict) -> dict:
         return hook
 
     for label, module in modules.items():
-        module.register_forward_hook(make_hook(label))
-    return store
+        handles.append(module.register_forward_hook(make_hook(label)))
+    return store, handles
 
 
 def activation_norms(tokenizer, model, params: dict) -> dict:
@@ -178,9 +184,16 @@ def activation_norms(tokenizer, model, params: dict) -> dict:
     prompt = build_prompt(tokenizer, params, params["hooks"]["prompt"])
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
-    store = forward_hooks({label: layers[i] for label, i in targets.items()})
-    with torch.inference_mode():
-        model(**inputs)
+    was_training = model.training
+    store, handles = forward_hooks({label: layers[i] for label, i in targets.items()})
+    try:
+        model.eval()
+        with torch.inference_mode():
+            model(**inputs)
+    finally:
+        for handle in handles:
+            handle.remove()
+        model.train(was_training)
 
     return {
         "layers": targets,
@@ -254,12 +267,20 @@ def lora_report(model, params: dict) -> list[dict]:
 
 def device_allocated_bytes(device: torch.device) -> int:
     """Сколько памяти занято прямо сейчас."""
+    if device.type == "mps":
+        return int(torch.mps.driver_allocated_memory())
+    if device.type == "cuda":
+        return int(torch.cuda.memory_allocated(device))
     used, _ = peak_rss()
     return used
 
 
 def device_metric_source(device: torch.device) -> str:
     """Имя функции, которой снята память."""
+    if device.type == "mps":
+        return "torch.mps.driver_allocated_memory"
+    if device.type == "cuda":
+        return "torch.cuda.max_memory_allocated"
     _, source = peak_rss()
     return source
 
@@ -294,20 +315,42 @@ def peak_rss() -> tuple[int, str]:
 
 
 class PeakMemory:
-    """Сколько памяти занято к концу прогона."""
+    """Пиковая память режима с метрикой, подходящей устройству."""
 
     def __init__(self, device: torch.device, interval: float = 0.01):
         self.device = device
+        self.interval = interval
         self.used = 0
+        self._stop = threading.Event()
+        self._sampler = None
+
+    def _sample_mps(self) -> None:
+        """MPS не хранит high-water mark, поэтому снимаем частые отсчёты."""
+        while not self._stop.wait(self.interval):
+            self.used = max(self.used, device_allocated_bytes(self.device))
 
     def __enter__(self) -> "PeakMemory":
+        if self.device.type == "cuda":
+            torch.cuda.synchronize(self.device)
+            torch.cuda.reset_peak_memory_stats(self.device)
+        elif self.device.type == "mps":
+            torch.mps.synchronize()
+            self.used = device_allocated_bytes(self.device)
+            self._sampler = threading.Thread(target=self._sample_mps, daemon=True)
+            self._sampler.start()
         return self
 
     def __exit__(self, *exc) -> bool:
-        # TODO: это расход режима — или то, что осталось занято после него,
-        # когда всё уже посчитано и мусор собран?
-        gc.collect()
-        self.used = device_allocated_bytes(self.device)
+        if self.device.type == "cuda":
+            torch.cuda.synchronize(self.device)
+            self.used = int(torch.cuda.max_memory_allocated(self.device))
+        elif self.device.type == "mps":
+            torch.mps.synchronize()
+            self.used = max(self.used, device_allocated_bytes(self.device))
+            self._stop.set()
+            self._sampler.join()
+        else:
+            self.used, _ = peak_rss()
         return False
 
     def result(self) -> dict:
@@ -385,12 +428,26 @@ def memory_profile(params: dict) -> list[dict]:
     repeats = max(1, int(params["memory"].get("repeats", 1)))
     results = []
     for mode in MODES:
-        runs = [measure_mode(mode, params) for _ in range(repeats)]
+        runs = []
+        for _ in range(repeats):
+            try:
+                completed = subprocess.run(
+                    [sys.executable, "-m", "src.inspect_model", "--probe", mode],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+            except subprocess.CalledProcessError as error:
+                details = error.stderr.strip() or error.stdout.strip() or "нет вывода"
+                raise RuntimeError(f"замер {mode} завершился с ошибкой:\n{details}") from error
+            lines = [line for line in completed.stdout.splitlines() if line.strip()]
+            if not lines:
+                raise RuntimeError(f"замер {mode} не вернул JSON")
+            runs.append(json.loads(lines[-1]))
         worst = max(runs, key=lambda item: item["peak_mb"])
         worst["repeats"] = repeats
         worst["peak_mb_runs"] = [item["peak_mb"] for item in runs]
         results.append(worst)
-        gc.collect()
     return results
 
 
@@ -447,11 +504,14 @@ def main() -> None:
     # процессах, а тянется он заметно дольше остального.
     from src.report import write_report
 
+    # Дочерние замеры запускаются до загрузки основной модели. Иначе родитель
+    # удерживает ещё одну копию весов на ускорителе и может спровоцировать OOM.
+    memory = memory_profile(params)
+
     tokenizer, model = load_model(params)
     rows = parameter_rows(model)
     table = group_table(rows)
     total = sum(item["params"] for item in table)
-    memory = memory_profile(params)
 
     report = {
         "model": params["model"]["name"],
