@@ -1,0 +1,16 @@
+{
+  "version": "v2",
+  "files": 2,
+  "rows_scanned": 61765,
+  "rows_written": 43221,
+  "dropped_queue_filter": 0,
+  "dropped_missing_fields": 18488,
+  "dropped_bad_label": 0,
+  "dropped_label_conflict": 56,
+  "rows_unescaped": 22944,
+  "queues_filter": 0,
+  "topics": 564,
+  "system_prompt_variants": 5,
+  "reply_in_answer": true,
+  "seconds": 2.55
+}
