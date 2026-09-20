@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "files": 1,
+  "rows_scanned": 28261,
+  "rows_written": 24567,
+  "dropped_queue_filter": 0,
+  "dropped_missing_fields": 3644,
+  "dropped_bad_label": 0,
+  "dropped_label_conflict": 50,
+  "rows_unescaped": 5650,
+  "queues_filter": 0,
+  "topics": 414,
+  "system_prompt_variants": 5,
+  "reply_in_answer": true,
+  "seconds": 1.04
+}

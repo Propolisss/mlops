@@ -126,9 +126,15 @@ def main() -> None:
     mpath.write_text(json.dumps(metrics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     if failed:
-        # TODO: гейт или отчёт? Стадия, которая сообщает о проблеме и продолжает,
-        # не мешает вырожденному набору доехать до обучения.
-        print("diversity: предупреждение — " + "; ".join(failed))
+        # Гейт, а не отчёт: стадия, которая сообщает о проблеме и продолжает,
+        # не мешает вырожденному набору доехать до обучения. Каждое нарушение
+        # отдельной строкой — чинить придётся по одному.
+        print(f"diversity: набор не прошёл гейт, нарушено порогов: {len(failed)}")
+        for item in failed:
+            print(f"  ✗ {item}")
+        raise DiversityError(
+            f"нарушено порогов: {len(failed)} — подробности выше, числа в {mpath}"
+        )
 
     print(
         f"diversity: {stats['examples']} строк, {stats['system_prompts']} системных промптов, "
@@ -139,4 +145,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Без traceback: нарушения уже напечатаны построчно, стек тут ничего не добавит.
+    try:
+        main()
+    except DiversityError as exc:
+        raise SystemExit(f"diversity: {exc}")

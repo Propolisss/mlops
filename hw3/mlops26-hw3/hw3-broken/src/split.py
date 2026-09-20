@@ -11,18 +11,32 @@ from src.schema import Example, dump, iter_examples
 from src.textnorm import normalize_group
 
 
-def row_split(count: int, ratios: dict[str, float], seed: int) -> list[str]:
-    """Раздать строкам метки сплита в заданных долях."""
-    order = list(range(count))
-    random.Random(seed).shuffle(order)
-    labels = [""] * count
-    start = 0
-    names = list(ratios)
-    for i, name in enumerate(names):
-        stop = count if i == len(names) - 1 else start + round(count * ratios[name])
-        for pos in order[start:stop]:
-            labels[pos] = name
-        start = stop
+def group_split(
+    groups: dict[str, list[Example]], ratios: dict[str, float], seed: int
+) -> dict[str, str]:
+    """Раздать сплиты ГРУППАМ, а не строкам: группа уезжает в один сплит целиком.
+
+    Построчный сплит выглядит решением, но им не является: формулировки внутри
+    одной темы — парафразы друг друга, и случайная раздача разносит их по
+    train и test. Утечка при этом ничего не роняет и не пишет в лог, её
+    единственный симптом — подозрительно хорошая метрика на тесте.
+
+    Крупные группы раздаются первыми: последняя большая группа иначе не влезает
+    в оставшийся зазор, и фактические доли разъезжаются на проценты.
+    """
+    keys = sorted(groups)
+    random.Random(seed).shuffle(keys)
+    keys.sort(key=lambda key: -len(groups[key]))
+
+    total = sum(len(rows) for rows in groups.values())
+    targets = {name: total * share for name, share in ratios.items()}
+    filled = {name: 0 for name in ratios}
+
+    labels: dict[str, str] = {}
+    for key in keys:
+        name = max(filled, key=lambda n: targets[n] - filled[n])
+        labels[key] = name
+        filled[name] += len(groups[key])
     return labels
 
 
@@ -36,15 +50,14 @@ def main() -> None:
     if cfg["group_key"] != "topic":
         raise SystemExit(f"неизвестный split.group_key: {cfg['group_key']!r}")
 
-    sizes: dict[str, int] = {}
+    groups: dict[str, list[Example]] = {}
     for ex in examples:
-        key = normalize_group(ex.topic)
-        sizes[key] = sizes.get(key, 0) + 1
+        groups.setdefault(normalize_group(ex.topic), []).append(ex)
 
-    labels = row_split(len(examples), cfg["ratios"], cfg["seed"])
+    labels = group_split(groups, cfg["ratios"], cfg["seed"])
     buckets: dict[str, list[Example]] = {name: [] for name in cfg["ratios"]}
-    for label, ex in zip(labels, examples):
-        buckets[label].append(ex)
+    for key, rows in groups.items():
+        buckets[labels[key]].extend(rows)
 
     for name, rows in buckets.items():
         out = Path(paths[name])
@@ -66,7 +79,7 @@ def main() -> None:
         "version": params["collect"]["version"],
         "seed": cfg["seed"],
         "group_key": cfg["group_key"],
-        "groups_total": len(sizes),
+        "groups_total": len(groups),
         "sizes": {name: len(rows) for name, rows in buckets.items()},
         "groups": {
             name: len({normalize_group(ex.topic) for ex in rows}) for name, rows in buckets.items()
@@ -84,7 +97,7 @@ def main() -> None:
     print(
         "split: "
         + ", ".join(f"{name} {len(rows)}" for name, rows in buckets.items())
-        + f" (групп {len(sizes)}, {metrics['seconds']} с)"
+        + f" (групп {len(groups)}, {metrics['seconds']} с)"
     )
 
 

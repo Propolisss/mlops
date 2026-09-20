@@ -1,0 +1,31 @@
+{
+  "version": "v1",
+  "examples": 20870,
+  "system_prompts": 5,
+  "groups": 414,
+  "largest_group": "technical support / security",
+  "largest_group_share": 0.0564,
+  "answer_len": {
+    "p10": 291,
+    "p50": 525,
+    "p90": 742,
+    "ratio_p90_p10": 2.55,
+    "cv": 0.355,
+    "min": 139,
+    "max": 1509
+  },
+  "same_length_share": 0.0034,
+  "duplicate_answer_share": 0.0017,
+  "thresholds": {
+    "min_examples": 1000,
+    "min_system_prompts": 3,
+    "min_groups": 50,
+    "max_group_share": 0.1,
+    "min_answer_len_ratio": 1.6,
+    "max_same_length_share": 0.25,
+    "max_duplicate_answer_share": 0.3
+  },
+  "violations": [],
+  "passed": true,
+  "seconds": 0.53
+}

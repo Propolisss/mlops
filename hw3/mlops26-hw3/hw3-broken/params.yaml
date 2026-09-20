@@ -4,39 +4,60 @@
 collect:
   # Версия датасета переключается ЗДЕСЬ. Всё остальное — следствие.
   version: "v1"              # v1 | v2
-  n_rows: 3000               # строк, берём из каждого файла-источника ПОСЛЕ фильтров
+  n_rows: 30000              # строк, берём из каждого файла-источника ПОСЛЕ фильтров.
+                             # Потолок, а не выборка: он выше любого из файлов,
+                             # поэтому срез берётся целиком. Резать по первым N
+                             # нельзя — источник склеен из трёх выгрузок, и
+                             # повторы тикетов живут на стыке между ними.
   sources:
     v1:
-      - "../../datasets/nmo/sft_single/train/0000.parquet"
+      - "sources/tickets-en.jsonl"
     v2:
-      - "../../datasets/nmo/sft_single/train/0000.parquet"
-      - "../../datasets/nmo/sft_single/train/0001.parquet"
+      - "sources/tickets-en.jsonl"
+      - "sources/tickets-de.jsonl"
+
+  # Снимок источника. Сеть живёт в scripts/fetch_source.py, стадия collect
+  # читает только уже скачанные файлы: иначе dvc repro зависел бы от того,
+  # что автор датасета сделает со своим репозиторием завтра.
+  source_dir: "sources"
+  source_url: "https://huggingface.co/api/datasets/Tobi-Bueck/customer-support-tickets/parquet/default/train/0.parquet"
 
   # --- Переработка источника ---
   # Чужой готовый набор — это сырьё, а не сдача (см. README, «Готовый датасет
-  # как источник»). Три параметра ниже — то, чем эталон отличается от «скачал
-  # parquet и переименовал в raw.jsonl». Каждый из них обязан быть отражён
+  # как источник»). Параметры ниже — то, чем сдача отличается от «скачал
+  # parquet и переименовал в raw.jsonl». Каждый из них отражён
   # в docs/datasheet.md.
 
-  topics: null               # null — все темы источника;
-                             # список тем — сузить набор до своей предметной области.
-                             # Сужение — законная переработка, но следите за
-                             # diversity.min_groups: одна тема не датасет.
+  queues: null               # null — все очереди источника;
+                             # список очередей — сузить набор до своей
+                             # предметной области. Следите за
+                             # diversity.min_groups: одна очередь не датасет.
 
-  verify_answer_index: true  # сверять ответ ассистента с correct_choice_indices
-                             # источника. Чужую разметку не принимаем на веру:
-                             # расхождение — строка выбрасывается и попадает в счётчик.
+  verify_labels: true        # сверять разметку источника: обязательные поля на
+                             # месте, priority и type из допустимого набора,
+                             # теги непустые. Дополнительно выбрасываются
+                             # тикеты с одинаковым текстом и РАЗНОЙ разметкой:
+                             # консистентность нельзя чинить выбором наугад.
 
-  system_prompts:            # В источнике системный промпт ОДИН на все 384k строк.
-                             # Модель, обученная на одной формулировке инструкции,
-                             # заучивает её как константу и ломается от перефраза.
-                             # Поэтому инструкция разведена на варианты; вариант
-                             # выбирается детерминированно по id примера.
-    - "Ты отвечаешь на русскоязычные тестовые вопросы НМО. Дан вопрос и варианты ответа с нумерацией с 0. Выбери один правильный вариант. Ответь только номером варианта и текстом ответа, без объяснений."
-    - "Перед тобой тестовый вопрос НМО на русском языке и варианты ответа, пронумерованные с нуля. Выбери единственный верный вариант и выведи его номер и текст. Ничего не объясняй."
-    - "Задача: выбрать один правильный ответ на вопрос НМО. Варианты пронумерованы начиная с 0. В ответе — только номер и текст выбранного варианта, без рассуждений."
-    - "Ты помогаешь готовиться к аккредитации НМО. Дан вопрос и пронумерованные с 0 варианты ответа. Назови один правильный вариант: сначала номер, затем его текст. Пояснений не добавляй."
-    - "Отвечай на вопросы НМО по клиническим рекомендациям. Варианты ответа пронумерованы с 0, верный ровно один. Выведи номер верного варианта и его текст — и больше ничего."
+  include_reply: true        # включать ответ оператора в JSON-ответ ассистента.
+                             # false — задача сводится к чистой классификации,
+                             # и тогда diversity.min_answer_len_ratio придётся
+                             # снижать: длина JSON-метки зажата схемой.
+
+  allowed_priorities: ["low", "medium", "high", "critical", "very_low"]
+  allowed_types: ["Incident", "Request", "Problem", "Change"]
+
+  system_prompts:            # В источнике инструкции нет вообще: это плоская
+                             # таблица. Единственная формулировка на весь
+                             # датасет модель заучивает как константу и
+                             # ломается от перефраза, поэтому инструкция
+                             # разведена на варианты; вариант выбирается
+                             # детерминированно по id примера.
+    - "You are a support desk triage assistant. Read the customer email and reply with a single JSON object containing the routing queue, the ticket type, the priority, the tags and a draft reply for the agent. Output JSON only."
+    - "Triage an incoming support email. Return one JSON object with the fields queue, type, priority, tags and reply. The reply field holds the answer the agent should send. Do not write anything outside the JSON."
+    - "Act as the first line of a helpdesk. Given the subject and body of a customer message, decide which queue it belongs to, what type and priority it has, which tags describe it, and draft the agent response. Answer with a single JSON object."
+    - "Your task is ticket routing. From the customer email below, produce a JSON object holding the target queue, the ticket type, the priority level, the list of tags and a draft reply. No prose, no explanations, JSON only."
+    - "Process this support request as a helpdesk system would: pick the queue, the type, the priority and the tags, then draft the reply the agent will send. Return everything as one JSON object and nothing else."
 
 clean:
   # Фильтр длин: слишком короткий пример — обрезок, слишком длинный — выброс.
@@ -61,7 +82,7 @@ diversity:
   #
   # Пороги — не догма: их можно менять под свою задачу, но только в эту сторону
   # и только с обоснованием в docs/datasheet.md. «Снизил, чтобы позеленело» —
-  # не обоснование.
+  # не обоснование. Здесь НИ ОДИН порог не менялся: значения ниже — авторские.
 
   min_examples: 1000         # строк после очистки. Меньше — модель увидит
                              # каждый пример по нескольку раз за эпоху.
@@ -78,8 +99,9 @@ diversity:
   max_duplicate_answer_share: 0.30  # доля ответов-повторов (точные совпадения)
 
 split:
-  # Группа сплита. Вопросы одной темы не должны разъезжаться по train/test:
-  # текст темы дословно входит в промпт, а вопросы внутри темы — парафразы.
+  # Группа сплита. Тикеты одной темы не должны разъезжаться по train/test:
+  # очередь и главный тег дословно определяют, о чём обращение, а формулировки
+  # внутри одной темы — парафразы друг друга.
   group_key: "topic"
   ratios:
     train: 0.8

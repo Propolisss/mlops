@@ -11,16 +11,27 @@ stages:
   collect:
     cmd: python -m src.collect
     deps:
-      # TODO: добавить сюда путь к СВОЕМУ источнику данных.
-      # Без этого dvc не заметит, что источник изменился, и не пересчитает стадию.
+      # Снимок источника целиком: версия выбирает из него файлы, а какие
+      # именно — решает params.collect.sources, которого deps не видит.
+      - sources
       - src/collect.py
+      - src/textnorm.py
       - src/config.py
+    params:
+      # Без этого смена collect.version не инвалидирует стадию: файлы-источники
+      # лежат на месте, код не менялся, и dvc сообщает, что пересчитывать нечего.
+      - collect
+      - paths.raw
     outs:
       - data/raw.jsonl
+    metrics:
+      - metrics/collect.json:
+          cache: false
 
   clean:
     cmd: python -m src.clean
     deps:
+      - data/raw.jsonl
       - src/clean.py
       - src/dedup.py
       - src/pii.py
@@ -70,7 +81,11 @@ stages:
       - paths.val
       - paths.test
     outs:
+      # Все три сплита, а не один train: невыгруженные val и test не
+      # версионируются, и откатиться к ним через dvc checkout нечем.
       - data/train.jsonl
+      - data/val.jsonl
+      - data/test.jsonl
     metrics:
       - metrics/split.json:
           cache: false

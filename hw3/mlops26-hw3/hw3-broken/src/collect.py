@@ -1,32 +1,55 @@
-"""Стадия collect: источник → data/raw.jsonl.
+"""Стадия collect: снимок источника → data/raw.jsonl.
 
-ЗДЕСЬ студент подменяет сбор на свой. Ниже — чтение parquet курсового датасета
-НМО; у вас на этом месте будет парсер сайта, выгрузка из БД, экспорт из Notion.
+Источник — таблица тикетов службы поддержки (Tobi-Bueck/customer-support-tickets,
+CC BY-NC 4.0). Снимок кладёт на диск scripts/fetch_source.py; сюда он приходит
+уже скачанным, поэтому стадия не ходит в сеть и воспроизводима.
+
 Контракт стадии, а не её внутренности, держит остальной пайплайн:
 на выходе JSONL со строками {"id", "topic", "messages": [system, user, assistant]}.
 
 Скачанный чужой набор сам по себе сдачей не является (README, «Готовый датасет
-как источник»). Поэтому стадия не перекладывает parquet в JSONL один в один,
+как источник»). Поэтому стадия не перекладывает таблицу в JSONL один в один,
 а делает три вещи, и каждая видна числом в metrics/collect.json:
 
-  1. сужает набор до перечисленных тем (collect.topics), если это нужно задаче;
-  2. сверяет ответ с разметкой источника (collect.verify_answer_index) —
-     расхождение выбрасывается, а не переносится в обучение;
-  3. разводит единственную инструкцию источника на варианты
-     (collect.system_prompts), чтобы модель не заучила её формулировку.
+  1. сужает набор до перечисленных очередей (collect.queues), если это нужно задаче;
+  2. сверяет разметку источника (collect.verify_labels) — тикет без обязательных
+     полей, со значением вне допустимого набора или с текстом-близнецом под
+     другой разметкой выбрасывается, а не переносится в обучение;
+  3. собирает из плоских колонок обучающий пример: составную тему
+     «очередь / главный тег», один из вариантов инструкции и JSON-ответ.
 """
 
 import hashlib
 import json
+import re
 import time
+from collections import defaultdict
 from pathlib import Path
 
-import pyarrow.parquet as pq
-
 from src.config import load_params, source_files
+from src.textnorm import normalize_text
 
-COLUMNS = ["id", "topic", "correct_choice_indices", "messages"]
-BATCH = 2000
+TAG_COLUMNS = [f"tag_{i}" for i in range(1, 9)]
+REQUIRED = ("subject", "body", "answer", "queue", "type", "priority", "tag_1")
+
+_BR = re.compile(r"<br\s*/?>", re.IGNORECASE)
+_BLANK_RUNS = re.compile(r"\n{3,}")
+# Порядок важен: \r\n разворачивается до одиночного \n, иначе останется \r.
+_ESCAPES = (("\\r\\n", "\n"), ("\\r", "\n"), ("\\n", "\n"), ("\\t", "\t"))
+
+
+def unescape(text: str) -> str:
+    """Развернуть переводы строк, оставшиеся от выгрузки в CSV.
+
+    В источнике перенос строки лежит двумя символами — обратным слэшем и «n», —
+    а абзацы местами размечены тегом <br>. Для модели это мусорные токены
+    посреди предложения, для фильтра длин — лишние символы. Плейсхолдеры
+    анонимизации (<name>, <tel_num>) трогать нельзя: они несут смысл.
+    """
+    for source, replacement in _ESCAPES:
+        text = text.replace(source, replacement)
+    text = _BR.sub("\n", text)
+    return _BLANK_RUNS.sub("\n\n", text).strip()
 
 
 def pick_prompt(example_id: str, variants: list[str]) -> str:
@@ -39,16 +62,67 @@ def pick_prompt(example_id: str, variants: list[str]) -> str:
     return variants[int(digest, 16) % len(variants)]
 
 
-def answer_matches_source(row: dict) -> bool:
-    """Совпадает ли ответ ассистента с correct_choice_indices источника.
+def make_id(row: dict) -> str:
+    """Идентификатор примера. В источнике его нет — считаем от содержимого.
 
-    В sft_single правильный вариант ровно один, а ответ начинается с его
-    номера. Всё, что не так, — либо другой тип задачи, либо битая разметка.
+    От языка тоже: в многоязычной выгрузке встречаются переводы одного тикета,
+    и без языка у них совпал бы id.
     """
-    indices = list(row["correct_choice_indices"] or [])
-    if len(indices) != 1:
-        return False
-    return row["messages"][2]["content"].startswith(f"Ответ: {indices[0]}")
+    payload = "␟".join((row["language"] or "", row["subject"], row["body"]))
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def tags_of(row: dict) -> list[str]:
+    return [row[c].strip() for c in TAG_COLUMNS if (row.get(c) or "").strip()]
+
+
+def topic_of(row: dict) -> str:
+    """Тема обращения — ключ группы для сплита.
+
+    Одной очереди мало: крупнейшая занимает 29% набора, а сплит по группам
+    требует, чтобы ни одна не решала за весь датасет. Главный тег дробит
+    очередь на предметные темы и даёт сотни групп вместо десяти.
+    """
+    return f"{row['queue']} / {row['tag_1'].strip()}"
+
+
+def label_signature(row: dict) -> str:
+    """Разметка тикета одной строкой — для поиска противоречий в источнике."""
+    return json.dumps(
+        [row["queue"], row["type"], row["priority"], tags_of(row)], ensure_ascii=False
+    )
+
+
+def build_answer(row: dict, include_reply: bool) -> str:
+    answer = {
+        "queue": row["queue"],
+        "type": row["type"],
+        "priority": row["priority"],
+        "tags": tags_of(row),
+    }
+    if include_reply:
+        answer["reply"] = row["answer"].strip()
+    return json.dumps(answer, ensure_ascii=False)
+
+
+def read_jsonl(path: Path) -> list[dict]:
+    with path.open(encoding="utf-8") as fh:
+        return [json.loads(line) for line in fh if line.strip()]
+
+
+def conflicting_texts(rows: list[dict]) -> set[str]:
+    """Нормализованные тексты, встречающиеся в источнике под разной разметкой.
+
+    Консистентность (лекция 3): одинаковые вопросы не должны получать разные
+    ответы. Выбрать из двух вариантов наугад нельзя — неизвестно, какой верен,
+    поэтому выбрасываются все копии такого текста. Реестр строится по всему
+    файлу-источнику, а не по срезу n_rows: иначе состав зависел бы от того,
+    где обрезали.
+    """
+    seen: dict[str, set[str]] = defaultdict(set)
+    for row in rows:
+        seen[normalize_text(f"{row['subject']} {row['body']}")].add(label_signature(row))
+    return {text for text, signatures in seen.items() if len(signatures) > 1}
 
 
 def main() -> None:
@@ -59,65 +133,90 @@ def main() -> None:
     variants = cfg["system_prompts"]
     if not variants:
         raise SystemExit("collect.system_prompts пуст: инструкцию брать неоткуда")
-    topics = cfg["topics"]
-    wanted = set(topics) if topics else None
+    queues = cfg["queues"]
+    wanted = set(queues) if queues else None
+    allowed_priorities = set(cfg["allowed_priorities"])
+    allowed_types = set(cfg["allowed_types"])
 
     out = Path(paths["raw"])
     out.parent.mkdir(parents=True, exist_ok=True)
 
     started = time.perf_counter()
-    scanned = written = dropped_topic = dropped_answer = 0
+    scanned = written = unescaped = 0
+    dropped_queue = dropped_fields = dropped_label = dropped_conflict = 0
     prompts_used: set[str] = set()
+    topics: set[str] = set()
 
     with out.open("w", encoding="utf-8") as fh:
         for src in source_files(params):
-            if not src.exists():
-                raise SystemExit(f"нет файла-источника: {src}")
+            rows = read_jsonl(src)
+            # Текст разворачивается до поиска противоречий: иначе две копии
+            # одного тикета, размеченные по-разному, разойдутся по реестру
+            # из-за разного экранирования, а не из-за разметки.
+            for row in rows:
+                original = [row.get(field) for field in ("subject", "body", "answer")]
+                for field in ("subject", "body", "answer"):
+                    row[field] = unescape(row.get(field) or "")
+                if [row[f] for f in ("subject", "body", "answer")] != original:
+                    unescaped += 1
+            conflicts = conflicting_texts(rows) if cfg["verify_labels"] else set()
             taken = 0
-            # Фильтры применяются ДО отсечки n_rows: иначе «первые 3000 строк»
-            # и «3000 строк по теме» — разные вещи, и сужение набора давало бы
-            # случайный огрызок вместо заказанного объёма.
-            for batch in pq.ParquetFile(src).iter_batches(batch_size=BATCH, columns=COLUMNS):
-                for row in batch.to_pylist():
-                    if taken >= n_rows:
-                        break
-                    scanned += 1
-                    if wanted is not None and row["topic"] not in wanted:
-                        dropped_topic += 1
-                        continue
-                    if cfg["verify_answer_index"] and not answer_matches_source(row):
-                        dropped_answer += 1
-                        continue
-                    prompt = pick_prompt(row["id"], variants)
-                    prompts_used.add(prompt)
-                    record = {
-                        "id": row["id"],
-                        "topic": row["topic"],
-                        # messages из parquet уже в формате чата; меняется только
-                        # системная реплика — на выбранный вариант инструкции.
-                        "messages": [
-                            {"role": "system", "content": prompt},
-                            *(
-                                {"role": m["role"], "content": m["content"]}
-                                for m in row["messages"][1:]
-                            ),
-                        ],
-                    }
-                    fh.write(json.dumps(record, ensure_ascii=False) + "\n")
-                    taken += 1
-                    written += 1
+            # Фильтры применяются ДО отсечки n_rows: иначе «первые 12000 строк»
+            # и «12000 строк по очереди» — разные вещи, и сужение набора давало
+            # бы случайный огрызок вместо заказанного объёма.
+            for row in rows:
                 if taken >= n_rows:
                     break
+                scanned += 1
+                if wanted is not None and row["queue"] not in wanted:
+                    dropped_queue += 1
+                    continue
+                if cfg["verify_labels"]:
+                    if any(not (row.get(field) or "").strip() for field in REQUIRED):
+                        dropped_fields += 1
+                        continue
+                    if row["priority"] not in allowed_priorities or row["type"] not in allowed_types:
+                        dropped_label += 1
+                        continue
+                    if normalize_text(f"{row['subject']} {row['body']}") in conflicts:
+                        dropped_conflict += 1
+                        continue
+                example_id = make_id(row)
+                prompt = pick_prompt(example_id, variants)
+                prompts_used.add(prompt)
+                topic = topic_of(row)
+                topics.add(topic)
+                record = {
+                    "id": example_id,
+                    "topic": topic,
+                    "messages": [
+                        {"role": "system", "content": prompt},
+                        {
+                            "role": "user",
+                            "content": f"Subject:\n{row['subject'].strip()}\n\n"
+                            f"Message:\n{row['body'].strip()}",
+                        },
+                        {"role": "assistant", "content": build_answer(row, cfg["include_reply"])},
+                    ],
+                }
+                fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+                taken += 1
+                written += 1
 
     metrics = {
         "version": cfg["version"],
         "files": len(source_files(params)),
         "rows_scanned": scanned,
         "rows_written": written,
-        "dropped_topic_filter": dropped_topic,
-        "dropped_answer_mismatch": dropped_answer,
-        "topics_filter": len(wanted) if wanted else 0,
+        "dropped_queue_filter": dropped_queue,
+        "dropped_missing_fields": dropped_fields,
+        "dropped_bad_label": dropped_label,
+        "dropped_label_conflict": dropped_conflict,
+        "rows_unescaped": unescaped,
+        "queues_filter": len(wanted) if wanted else 0,
+        "topics": len(topics),
         "system_prompt_variants": len(prompts_used),
+        "reply_in_answer": cfg["include_reply"],
         "seconds": round(time.perf_counter() - started, 2),
     }
     mpath = Path(paths["metrics_collect"])
@@ -127,8 +226,10 @@ def main() -> None:
     print(
         f"collect: версия {cfg['version']}, файлов {metrics['files']}, "
         f"просмотрено {scanned}, записано {written} "
-        f"(фильтр тем -{dropped_topic}, расхождение с разметкой -{dropped_answer}), "
-        f"вариантов инструкции {len(prompts_used)}, "
+        f"(фильтр очередей -{dropped_queue}, нет обязательных полей -{dropped_fields}, "
+        f"значение вне набора -{dropped_label}, противоречивая разметка -{dropped_conflict}), "
+        f"развёрнуто экранирование в {unescaped} строках, "
+        f"тем {len(topics)}, вариантов инструкции {len(prompts_used)}, "
         f"{metrics['seconds']} с → {out}"
     )
 
