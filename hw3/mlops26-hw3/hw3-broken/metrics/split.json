@@ -1,17 +1,17 @@
 {
-  "version": "v1",
+  "version": "v2",
   "seed": 42,
   "group_key": "topic",
-  "groups_total": 414,
+  "groups_total": 564,
   "sizes": {
-    "train": 16696,
-    "val": 2087,
-    "test": 2087
+    "train": 28879,
+    "val": 3610,
+    "test": 3610
   },
   "groups": {
-    "train": 157,
-    "val": 128,
-    "test": 129
+    "train": 208,
+    "val": 178,
+    "test": 178
   },
   "ratios_actual": {
     "train": 0.8,
@@ -29,5 +29,5 @@
       "near_dup": []
     }
   },
-  "seconds": 2.58
+  "seconds": 4.73
 }

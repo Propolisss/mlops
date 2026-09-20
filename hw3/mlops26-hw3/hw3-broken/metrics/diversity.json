@@ -1,21 +1,21 @@
 {
-  "version": "v1",
-  "examples": 20870,
+  "version": "v2",
+  "examples": 36099,
   "system_prompts": 5,
-  "groups": 414,
-  "largest_group": "technical support / security",
-  "largest_group_share": 0.0564,
+  "groups": 564,
+  "largest_group": "technical support / bug",
+  "largest_group_share": 0.0576,
   "answer_len": {
-    "p10": 291,
-    "p50": 525,
-    "p90": 742,
-    "ratio_p90_p10": 2.55,
-    "cv": 0.355,
+    "p10": 295,
+    "p50": 542,
+    "p90": 808,
+    "ratio_p90_p10": 2.74,
+    "cv": 0.377,
     "min": 139,
-    "max": 1509
+    "max": 1945
   },
-  "same_length_share": 0.0034,
-  "duplicate_answer_share": 0.0017,
+  "same_length_share": 0.0025,
+  "duplicate_answer_share": 0.0011,
   "thresholds": {
     "min_examples": 1000,
     "min_system_prompts": 3,
@@ -27,5 +27,5 @@
   },
   "violations": [],
   "passed": true,
-  "seconds": 0.53
+  "seconds": 0.95
 }
