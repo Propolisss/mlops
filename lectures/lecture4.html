@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лекция 4 — Токенизация, chat template, маскирование лоссов</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="parallax-bg">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>
+  </div>
+  <div class="slides-wrapper">
+
+    <!-- ==================== SLIDE 1 ==================== -->
+    <div class="slide active">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 1/12</span>
+        <h1 class="slide-title">Токенизация, шаблон чата, маска лосса</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 900 150" role="img" aria-label="Путь примера от строки JSONL до шага обучения">
+      <defs>
+  <marker id="ar_route" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_route" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="20" y="26">путь одного примера: из файла, который вы сдали в ДЗ 3, в шаг обучения ДЗ 5</text>
+      <rect class="bx" x="20" y="44" width="133" height="62" rx="10"/>
+      <text class="t" x="86.5" y="73">JSONL</text>
+      <text class="ts" x="86.5" y="89">строка = диалог</text>
+      <path class="w" d="M155,75 L163,75" marker-end="url(#ar_route)"/>
+      <rect class="bx" x="166" y="44" width="133" height="62" rx="10"/>
+      <text class="t" x="232.5" y="73">шаблон чата</text>
+      <text class="ts" x="232.5" y="89">диалог → строка</text>
+      <path class="w" d="M301,75 L309,75" marker-end="url(#ar_route)"/>
+      <rect class="bx" x="312" y="44" width="133" height="62" rx="10"/>
+      <text class="t" x="378.5" y="73">токенизация</text>
+      <text class="ts" x="378.5" y="89">строка → id</text>
+      <path class="w" d="M447,75 L455,75" marker-end="url(#ar_route)"/>
+      <rect class="bxh" x="458" y="44" width="133" height="62" rx="10"/>
+      <text class="t" x="524.5" y="73">маска лосса</text>
+      <text class="ts" x="524.5" y="89">labels = −100</text>
+      <path class="w" d="M593,75 L601,75" marker-end="url(#ar_route)"/>
+      <rect class="bx" x="604" y="44" width="133" height="62" rx="10"/>
+      <text class="t" x="670.5" y="73">батч</text>
+      <text class="ts" x="670.5" y="89">паддинг, packing</text>
+      <path class="w" d="M739,75 L747,75" marker-end="url(#ar_route)"/>
+      <rect class="bx" x="750" y="44" width="133" height="62" rx="10"/>
+      <text class="t" x="816.5" y="73">шаг обучения</text>
+      <text class="ts" x="816.5" y="89">loss.backward()</text>
+      <text class="ts" x="524.5" y="128">здесь решается, чему модель вообще учится</text>
+    </svg>
+          </figure>
+          <ul>
+            <li>Между вашим JSONL и обучением стоит препроцессинг. Он <strong>не падает</strong>, когда сломан, &mdash; он тихо меняет задачу, которой вы учите модель</li>
+            <li>Лекция идёт по этой схеме слева направо. Кульминация &mdash; маска лосса: без неё 91% обучающего сигнала уходит на переписывание вопроса</li>
+            <li>Все числа сегодня &mdash; замеры на срезе датасета курса токенизатором <code>Qwen/Qwen3-0.6B</code>: 500 примеров train, 100 val, <code>max_seq_len = 512</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 2 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 2/12</span>
+        <h1 class="slide-title">Токен &mdash; не слово и не буква</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 200" role="img" aria-label="Одна фраза на русском и английском, разбитая токенизатором Qwen3">
+      <defs>
+  <marker id="ar_bpe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_bpe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="22">одна и та же фраза, один и тот же токенизатор Qwen3</text>
+      <text class="tl" x="30" y="46">«Дифференциальная диагностика включает пневмонию.» — 48 символов, <tspan class="red">17 токенов</tspan></text>
+      <rect class="bx" x="30" y="56" width="20" height="32" rx="5"/><text class="ms" text-anchor="middle" x="40" y="76">Д</text>
+      <rect class="bx" x="50" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="67" y="76">иф</text>
+      <rect class="bx" x="84" y="56" width="51" height="32" rx="5"/><text class="ms" text-anchor="middle" x="109" y="76">фер</text>
+      <rect class="bx" x="135" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="152" y="76">ен</text>
+      <rect class="bx" x="169" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="186" y="76">ци</text>
+      <rect class="bx" x="203" y="56" width="102" height="32" rx="5"/><text class="ms" text-anchor="middle" x="254" y="76">альная</text>
+      <rect class="bx" x="305" y="56" width="85" height="32" rx="5"/><text class="ms" text-anchor="middle" x="347" y="76">диаг</text>
+      <rect class="bx" x="390" y="56" width="85" height="32" rx="5"/><text class="ms" text-anchor="middle" x="432" y="76">ности</text>
+      <rect class="bx" x="475" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="492" y="76">ка</text>
+      <rect class="bx" x="509" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="526" y="76">в</text>
+      <rect class="bx" x="543" y="56" width="68" height="32" rx="5"/><text class="ms" text-anchor="middle" x="577" y="76">ключ</text>
+      <rect class="bx" x="611" y="56" width="51" height="32" rx="5"/><text class="ms" text-anchor="middle" x="636" y="76">ает</text>
+      <rect class="bx" x="662" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="679" y="76">п</text>
+      <rect class="bx" x="696" y="56" width="51" height="32" rx="5"/><text class="ms" text-anchor="middle" x="721" y="76">нев</text>
+      <rect class="bx" x="747" y="56" width="51" height="32" rx="5"/><text class="ms" text-anchor="middle" x="772" y="76">мон</text>
+      <rect class="bx" x="798" y="56" width="34" height="32" rx="5"/><text class="ms" text-anchor="middle" x="815" y="76">ию</text>
+      <rect class="bx" x="832" y="56" width="20" height="32" rx="5"/><text class="ms" text-anchor="middle" x="842" y="76">.</text>
+      <text class="tl" x="30" y="122">«Differential diagnosis includes pneumonia.» — 42 символа, <tspan class="grn">6 токенов</tspan></text>
+      <rect class="bxg" x="30" y="132" width="20" height="32" rx="5"/><text class="ms" text-anchor="middle" x="40" y="152">D</text>
+      <rect class="bxg" x="50" y="132" width="187" height="32" rx="5"/><text class="ms" text-anchor="middle" x="143" y="152">ifferential</text>
+      <rect class="bxg" x="237" y="132" width="170" height="32" rx="5"/><text class="ms" text-anchor="middle" x="322" y="152">diagnosis</text>
+      <rect class="bxg" x="407" y="132" width="153" height="32" rx="5"/><text class="ms" text-anchor="middle" x="483" y="152">includes</text>
+      <rect class="bxg" x="560" y="132" width="170" height="32" rx="5"/><text class="ms" text-anchor="middle" x="645" y="152">pneumonia</text>
+      <rect class="bxg" x="730" y="132" width="20" height="32" rx="5"/><text class="ms" text-anchor="middle" x="740" y="152">.</text>
+      <text class="ts" x="440" y="188">ширина ячейки — длина куска в символах; пробел приклеен к началу следующего куска</text>
+    </svg>
+          </figure>
+          <div class="numbers">
+            <div class="num"><b>2,46</b><span>символа на токен на нашем датасете</span></div>
+            <div class="num hi"><b>&times;1,4…2,8</b><span>во столько раз русский дороже той же фразы по-английски — на трёх замеренных парах</span></div>
+            <div class="num"><b>8</b><span>кусков в слове «Антибактериальная»</span></div>
+          </div>
+          <ul>
+            <li><strong>BPE</strong> (Sennrich, Haddow, Birch, 2016): начинаем с байтов и жадно склеиваем самые частые пары. Словарь &mdash; результат статистики обучающего корпуса, а не грамматики</li>
+            <li>Отсюда всё остальное: длина контекста, цена токена, время обучения и скорость генерации считаются <strong>в токенах</strong>, а не в символах. «5000 знаков» ничего не говорит о стоимости</li>
+            <li>Первое, что надо сделать со своим датасетом, &mdash; <strong>посчитать его в токенах</strong> тем токенизатором, которым будете обучать. До запуска, а не после</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 3/12</span>
+        <h1 class="slide-title">Словарь Qwen3 и спецтокены</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 210" role="img" aria-label="Состав словаря Qwen3 и служебные токены">
+      <defs>
+  <marker id="ar_vocab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_vocab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="22">151 669 записей в токенизаторе — из чего они состоят</text>
+      <rect class="bx" x="30" y="36" width="508" height="40" rx="8"/>
+      <text class="t" x="284" y="61">латиница — 93 894</text>
+      <rect class="bxh" x="538" y="36" width="22" height="40" rx="4"/>
+      <rect class="bxo" x="560" y="36" width="290" height="40" rx="8"/>
+      <text class="t" x="705" y="61">цифры, знаки, байты, иероглифы — 53 646</text>
+      <path class="wd" d="M549,78 L549,96" />
+      <text class="ts" x="549" y="110">кириллица — 4 129 записей, 2,7% словаря</text>
+      <rect class="bx" x="30" y="128" width="195" height="56" rx="10"/>
+      <text class="m" text-anchor="middle" x="127" y="152">&lt;|im_start|&gt;</text>
+      <text class="ts" x="127" y="170">151644 · начало реплики</text>
+      <rect class="bxh" x="239" y="128" width="195" height="56" rx="10"/>
+      <text class="m" text-anchor="middle" x="336" y="152">&lt;|im_end|&gt;</text>
+      <text class="ts" x="336" y="170">151645 · eos, конец реплики</text>
+      <rect class="bx" x="448" y="128" width="195" height="56" rx="10"/>
+      <text class="m" text-anchor="middle" x="545" y="152">&lt;|endoftext|&gt;</text>
+      <text class="ts" x="545" y="170">151643 · pad</text>
+      <rect class="bx" x="657" y="128" width="195" height="56" rx="10"/>
+      <text class="m" text-anchor="middle" x="754" y="152">&lt;think&gt; &lt;/think&gt;</text>
+      <text class="ts" x="754" y="170">151667, 151668 · рассуждение</text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li>Словарь один на все языки, и распределён он по корпусу обучения: латиницы в нём <strong>в 23 раза больше</strong>, чем кириллицы. Это не злой умысел, это статистика</li>
+            <li><strong>Спецтокены &mdash; не текст.</strong> У них свои id вне обычного BPE, и в строке они появляются только через шаблон. Если собрать их руками из символов, токенизатор разложит их на куски</li>
+            <li><code>eos</code> и <code>pad</code> &mdash; <strong>разные вещи</strong>. У Qwen3 <code>eos</code> = <code>&lt;|im_end|&gt;</code>, <code>pad</code> = <code>&lt;|endoftext|&gt;</code>. Модель без <code>eos</code> в обучающих примерах не научится останавливаться и будет говорить до упора в лимит</li>
+          </ul>
+          </div>
+          <div>
+            <div class="defs" style="grid-template-columns:minmax(0,1fr);margin-top:0">
+              <div class="def hi">
+                <b>Если у модели нет pad_token</b>
+                <span>У многих моделей <code>tokenizer.pad_token</code> просто <code>None</code>, и типовой совет &mdash; присвоить туда <code>eos_token</code>. Так делать можно, но тогда паддинг и конец ответа становятся одним и тем же id. Спасает только то, что <code>labels</code> на паддинге равны <code>&minus;100</code>, а <code>attention_mask</code> там ноль. Забыли одно из двух &mdash; модель учится дописывать хвост из паддинга.</span>
+              </div>
+            </div>
+            <div class="code-block"><pre><span class="comment"># проверить до обучения, а не после</span>
+tok.eos_token, tok.eos_token_id   <span class="comment"># '&lt;|im_end|&gt;', 151645</span>
+tok.pad_token, tok.pad_token_id   <span class="comment"># '&lt;|endoftext|&gt;', 151643</span>
+len(tok)                          <span class="comment"># 151669 — с учётом спецтокенов</span>
+tok.vocab_size                    <span class="comment"># 151643 — только BPE</span></pre></div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 4/12</span>
+        <h1 class="slide-title">Chat template: что именно подставляется</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 300" role="img" aria-label="Список сообщений превращается в одну строку шаблоном чата">
+      <defs>
+  <marker id="ar_tpl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_tpl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="26">список словарей</text>
+      <text class="tl" x="310" y="26">одна строка, которую увидит модель</text>
+      <rect class="bx" x="30" y="60" width="240" height="52" rx="10"/>
+      <text class="m" text-anchor="middle" x="150" y="84">"role": "system"</text>
+      <text class="ts" x="150" y="101">правила игры</text>
+      <rect class="bx" x="30" y="124" width="240" height="52" rx="10"/>
+      <text class="m" text-anchor="middle" x="150" y="148">"role": "user"</text>
+      <text class="ts" x="150" y="165">вопрос</text>
+      <rect class="bx" x="30" y="188" width="240" height="52" rx="10"/>
+      <text class="m" text-anchor="middle" x="150" y="212">"role": "assistant"</text>
+      <text class="ts" x="150" y="229">ответ — только он в лоссе</text>
+      <path class="w" d="M276,150 L302,150" marker-end="url(#ar_tpl)"/>
+      <rect class="bxo" x="310" y="40" width="540" height="222" rx="12"/>
+      <rect class="bxh" x="318" y="132" width="524" height="60" rx="6"/>
+      <text class="m" x="326" y="64">&lt;|im_start|&gt;system</text>
+      <text class="m" x="326" y="84">Ты врач-эксперт. Отвечай одной буквой варианта.&lt;|im_end|&gt;</text>
+      <text class="m" x="326" y="104">&lt;|im_start|&gt;user</text>
+      <text class="m" x="326" y="124">Какой препарат первой линии при пневмонии?&lt;|im_end|&gt;</text>
+      <text class="m" x="326" y="148">&lt;|im_start|&gt;assistant</text>
+      <text class="m" x="326" y="168">&lt;think&gt;</text>
+      <text class="m" x="326" y="188">&lt;/think&gt;</text>
+      <text class="m" x="326" y="212">A&lt;|im_end|&gt;</text>
+      <path class="wr" stroke-dasharray="5 4" d="M318,196 L842,196"/>
+      <text class="ts" x="580" y="238">выше красной черты — промпт, это и даёт add_generation_prompt=True</text>
+      <text class="ts" x="440" y="288">строк в шаблоне нет ни одной «своей»: всё берётся из tokenizer_config.json модели</text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li><code>apply_chat_template()</code> берёт шаблон (Jinja) <strong>из самой модели</strong> и превращает список сообщений в строку с её служебными токенами. У другой модели формат другой &mdash; и код при этом не меняется</li>
+            <li><code>add_generation_prompt=True</code> &mdash; путь инференса: строка обрывается там, где модель должна начать говорить. <code>False</code> &mdash; путь обучения: весь диалог с ответом и <code>eos</code></li>
+            <li>У Qwen3 при <code>enable_thinking=False</code> шаблон сам подставляет пустой <code>&lt;think&gt;&lt;/think&gt;</code> &mdash; и делает это <strong>в промпте</strong>, до ответа</li>
+          </ul>
+          </div>
+          <div>
+            <div class="code-block"><pre><span class="comment"># путь обучения — весь диалог</span>
+train_text = tok.apply_chat_template(
+    msgs, tokenize=False,
+    add_generation_prompt=<span class="keyword">False</span>,
+    enable_thinking=<span class="keyword">False</span>)
+
+<span class="comment"># путь инференса — только промпт</span>
+inf_text = tok.apply_chat_template(
+    msgs[:-1], tokenize=False,
+    add_generation_prompt=<span class="keyword">True</span>,
+    enable_thinking=<span class="keyword">False</span>)
+
+<span class="comment"># замер на этом примере:</span>
+<span class="comment"># len(train_text) = 244, len(inf_text) = 213</span>
+<span class="comment"># train_text.startswith(inf_text) -&gt; True</span></pre></div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 5 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 5/12</span>
+        <h1 class="slide-title">Где расходятся обучение и прод</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 250" role="img" aria-label="Строка шаблона и строка, собранная руками, расходятся на 213-м символе">
+      <defs>
+  <marker id="ar_drift" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_drift" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="22">одно и то же сообщение, собранное двумя способами</text>
+      <text class="tl" x="30" y="60">apply_chat_template() — 244 символа</text>
+      <rect class="bxg" x="30" y="70" width="520" height="34" rx="6"/>
+      <text class="ms" text-anchor="middle" x="290" y="91">…&lt;|im_start|&gt;assistant\n</text>
+      <rect class="bxh" x="550" y="70" width="180" height="34" rx="6"/>
+      <text class="ms" text-anchor="middle" x="640" y="91">&lt;think&gt;\n\n&lt;/think&gt;\n\n</text>
+      <rect class="bxg" x="730" y="70" width="110" height="34" rx="6"/>
+      <text class="ms" text-anchor="middle" x="785" y="91">A&lt;|im_end|&gt;\n</text>
+      <text class="tl" x="30" y="140">f-строка «как в туториале» — 225 символов</text>
+      <rect class="bx" x="30" y="150" width="520" height="34" rx="6"/>
+      <text class="ms" text-anchor="middle" x="290" y="171">…&lt;|im_start|&gt;assistant\n</text>
+      <rect class="bxr" x="550" y="150" width="110" height="34" rx="6"/>
+      <text class="ms" text-anchor="middle" x="605" y="171">A&lt;|im_end|&gt;\n</text>
+      <path class="wr" stroke-dasharray="5 4" d="M550,62 L550,196"/>
+      <text class="ts" x="550" y="212">символ 213: строки разошлись</text>
+      <text class="ts" x="440" y="238">обучение видит один формат, прод — другой; в логах и метриках обучения это не видно никак</text>
+    </svg>
+          </figure>
+          <ul>
+            <li><strong>Самая частая тихая ошибка дообучения.</strong> Шаблон собрали руками при обучении, а в проде вызвали <code>apply_chat_template</code> &mdash; или наоборот. Деградация выглядит как «дообучение не помогло»</li>
+            <li>Лечится структурно: <strong>один модуль</strong> <code>src/prompt.py</code>, из которого ходят и обучение, и инференс. Вторая копия шаблона в проекте &mdash; это уже дефект, даже если сегодня она совпадает</li>
+            <li>Инвариант, который проверяется тестом: <strong>строка инференса &mdash; побайтовый префикс строки обучения</strong>. Одна строчка сравнения ловит всё семейство этих ошибок</li>
+            <li class="chip-li"><code>enable_thinking</code> у Qwen3 &mdash; отдельная ловушка. При <code>False</code> пустой <code>&lt;think&gt;&lt;/think&gt;</code> стоит в промпте и маскируется. При <code>True</code> он уходит из промпта &mdash; и тот же блок в обучающем тексте попадает <strong>в лосс</strong>. Побайтовая проверка это пропустит: префикс останется префиксом</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 6/12</span>
+        <h1 class="slide-title">Маска лосса: labels = &minus;100</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 215" role="img" aria-label="Токены на границе промпта и ответа и соответствующие им labels">
+      <defs>
+  <marker id="ar_mask" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_mask" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="40" y="22">последние токены промпта и весь ответ — тот же пример, 73 токена целиком</text>
+      <text class="ms" text-anchor="middle" x="90" y="46">65</text>
+      <text class="ms" text-anchor="middle" x="190" y="46">66</text>
+      <text class="ms" text-anchor="middle" x="290" y="46">67</text>
+      <text class="ms" text-anchor="middle" x="390" y="46">68</text>
+      <text class="ms" text-anchor="middle" x="490" y="46">69</text>
+      <text class="ms" text-anchor="middle" x="590" y="46">70</text>
+      <text class="ms" text-anchor="middle" x="690" y="46">71</text>
+      <text class="ms" text-anchor="middle" x="790" y="46">72</text>
+      <rect class="bx" x="40" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="90" y="78">…вопрос</text>
+      <rect class="bx" x="140" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="190" y="78">&lt;think&gt;</text>
+      <rect class="bx" x="240" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="290" y="78">\n\n</text>
+      <rect class="bx" x="340" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="390" y="78">&lt;/think&gt;</text>
+      <rect class="bx" x="440" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="490" y="78">\n\n</text>
+      <rect class="bxg" x="540" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="590" y="78">A</text>
+      <rect class="bxg" x="640" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="690" y="78">&lt;|im_end|&gt;</text>
+      <rect class="bxg" x="740" y="54" width="100" height="38" rx="7"/><text class="ms" text-anchor="middle" x="790" y="78">\n</text>
+      <text class="tl" x="40" y="112">labels</text>
+      <rect class="bxo" x="40" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="90" y="142">−100</text>
+      <rect class="bxo" x="140" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="190" y="142">−100</text>
+      <rect class="bxo" x="240" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="290" y="142">−100</text>
+      <rect class="bxo" x="340" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="390" y="142">−100</text>
+      <rect class="bxo" x="440" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="490" y="142">−100</text>
+      <rect class="bxg" x="540" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="590" y="142">32</text>
+      <rect class="bxg" x="640" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="690" y="142">151645</text>
+      <rect class="bxg" x="740" y="120" width="100" height="34" rx="7"/><text class="ms" text-anchor="middle" x="790" y="142">198</text>
+      <path class="wr" stroke-dasharray="5 4" d="M540,40 L540,162"/>
+      <text class="ts" x="440" y="182">граница — 70 токенов промпта; зелёное — всё, чему учится модель на этом примере</text>
+      <text class="ts" x="440" y="204">eos в лоссе обязателен: иначе модель не узнает, где ответ кончается</text>
+    </svg>
+          </figure>
+          <div class="numbers">
+            <div class="num"><b>118 415</b><span>токенов в train-сплите, 497 примеров</span></div>
+            <div class="num hi"><b>10 788</b><span>из них под лоссом — 9,1%</span></div>
+            <div class="num"><b>22</b><span>токена в среднем ответе против 219 в промпте</span></div>
+          </div>
+          <ul>
+            <li><code>&minus;100</code> &mdash; не магия, а значение по умолчанию <code>ignore_index</code> у <code>CrossEntropyLoss</code> в PyTorch. Позиции с такой меткой просто не дают вклада в лосс и в градиент</li>
+            <li><code>input_ids</code> при этом остаются полными: <strong>модель читает весь промпт</strong>, она лишь не штрафуется за то, что не угадала его</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 7 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 7/12</span>
+        <h1 class="slide-title">Что происходит, если маску забыть</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 220" role="img" aria-label="Состав обучающего сигнала с маской и без маски">
+      <defs>
+  <marker id="ar_nomask" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_nomask" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="40" y="24">из чего складывается градиент на train-сплите — 118 415 токенов</text>
+      <text class="tl" x="40" y="46">с маской</text>
+      <rect class="bxg" x="40" y="52" width="73" height="38" rx="6"/>
+      <rect class="bxo" x="113" y="52" width="727" height="38" rx="6"/>
+      <text class="t" x="476" y="76">промпт: модель его читает, но за него не отвечает</text>
+      <text class="ms" text-anchor="middle" x="76" y="108">10 788</text>
+      <text class="tl" x="40" y="140">без маски</text>
+      <rect class="bxr" x="40" y="148" width="727" height="38" rx="6"/>
+      <text class="t" x="403" y="172">промпт — 107 627 токенов, 91% обучающего сигнала</text>
+      <rect class="bxg" x="767" y="148" width="73" height="38" rx="6"/>
+      <text class="ms" text-anchor="middle" x="803" y="204">10 788</text>
+      <text class="ts" x="403" y="212">то, ради чего всё затевалось, — вот эта зелёная полоска</text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li>Модель девять десятых времени учится <strong>воспроизводить вопрос</strong>: продолжать инструкцию, а не отвечать на неё. Ровно этому её и просили научиться</li>
+            <li>Симптом на инференсе: модель дописывает к вашему вопросу ещё один вопрос, повторяет системный промпт или уходит в формат датасета вместо ответа</li>
+            <li><strong>Лосс при этом ниже</strong>, чем при правильной маске, и падает быстрее. Промпт предсказать легче, чем ответ: он длиннее, шаблоннее и уже наполовину виден модели</li>
+          </ul>
+          </div>
+          <div>
+            <div class="defs" style="grid-template-columns:minmax(0,1fr);margin-top:0">
+              <div class="def hi">
+                <b>Почему «хороший лосс» здесь ничего не значит</b>
+                <span>Два прогона с разной маской дают <strong>несравнимые</strong> числа: это лосс по разным множествам позиций. Сравнивать кривые обучения можно только внутри одной схемы маскирования. Именно поэтому маска &mdash; часть конфигурации эксперимента, а не деталь реализации.</span>
+              </div>
+            </div>
+            <h3>Проверка, которая ловит это за секунду</h3>
+            <div class="code-block"><pre><span class="comment"># декодировать всё, что попало в лосс</span>
+ids = [i <span class="keyword">for</span> i, l <span class="keyword">in</span> <span class="keyword">zip</span>(input_ids, labels) <span class="keyword">if</span> l != -100]
+<span class="keyword">print</span>(tok.decode(ids))
+<span class="comment"># должен быть ТОЛЬКО ответ ассистента и eos</span></pre></div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 8 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 8/12</span>
+        <h1 class="slide-title">Граница маски и BPE</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 245" role="img" aria-label="Два случая установки границы маски: совпадение префикса и склейка токена">
+      <defs>
+  <marker id="ar_bound" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_bound" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="40">обычный случай: токены промпта — начало токенов полного текста</text>
+      <rect class="bxo" x="30" y="50" width="390" height="108" rx="12"/>
+      <rect class="bx" x="45" y="76" width="110" height="36" rx="6"/><text class="ms" text-anchor="middle" x="100" y="99">…буквой</text>
+      <rect class="bx" x="160" y="76" width="110" height="36" rx="6"/><text class="ms" text-anchor="middle" x="215" y="99">\n\n</text>
+      <rect class="bxg" x="280" y="76" width="110" height="36" rx="6"/><text class="ms" text-anchor="middle" x="335" y="99">A</text>
+      <path class="wr" stroke-dasharray="5 4" d="M275,66 L275,124"/>
+      <text class="ts" x="225" y="144">граница = длина промпта в токенах</text>
+      <text class="tl" x="460" y="40">склейка: общего префикса нет</text>
+      <rect class="bxo" x="460" y="50" width="390" height="108" rx="12"/>
+      <rect class="bx" x="475" y="76" width="110" height="36" rx="6"/><text class="ms" text-anchor="middle" x="530" y="99">…букв</text>
+      <rect class="bxr" x="590" y="76" width="160" height="36" rx="6"/><text class="ms" text-anchor="middle" x="670" y="99">ойA</text>
+      <rect class="bx" x="755" y="76" width="80" height="36" rx="6"/><text class="ms" text-anchor="middle" x="795" y="99">…</text>
+      <path class="wr" stroke-dasharray="5 4" d="M640,66 L640,124"/>
+      <text class="ts" x="655" y="144">один токен сидит по обе стороны границы</text>
+      <rect class="bxh" x="30" y="176" width="820" height="52" rx="12"/>
+      <text class="t" x="440" y="199">запасной путь: берём первый токен, который начинается не раньше конца промпта</text>
+      <text class="ts" x="440" y="217">склеенный токен уходит в промпт: теряем первый символ ответа, но не учим дописывать вопрос</text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li>BPE режет <strong>по статистике, а не по словам</strong>. Ничто не мешает токену захватить конец промпта вместе с началом ответа &mdash; тогда «совпадение префикса» не срабатывает</li>
+            <li>Поэтому граница ставится в два шага: сначала сравнение токенов промпта с началом полного текста, при неудаче &mdash; <strong>символьные офсеты</strong> (<code>return_offsets_mapping=True</code>)</li>
+            <li>Типовая ошибка: посчитать длину промпта <strong>в символах</strong> и отрезать столько же токенов. Символы и токены не в соотношении один к одному &mdash; маска уедет</li>
+          </ul>
+          </div>
+          <div>
+            <div class="numbers two" style="margin-top:0">
+              <div class="num hi"><b>0</b><span>срабатываний запасного пути на 497 примерах</span></div>
+              <div class="num"><b>\n\n</b><span>чем кончается промпт Qwen3 — поэтому склейки и нет</span></div>
+            </div>
+            <p class="chip">Ноль &mdash; это свойство <strong>конкретного шаблона</strong>, а не закон природы. Шаблон, который обрывается посреди слова, даст склейки, и доля срабатываний обязана быть в метриках: неожиданный рост означает, что шаблон поменяли.</p>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 9/12</span>
+        <h1 class="slide-title">max_seq_len: обрезка и цена длины</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 250" role="img" aria-label="Распределение длин примеров в токенах и порог обрезки">
+      <defs>
+  <marker id="ar_len" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_len" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="24">длины примеров в токенах: train, 500 примеров, до обрезки</text>
+      <rect class="bx" x="566" y="34" width="284" height="42" rx="8"/>
+      <text class="ms" text-anchor="middle" x="708" y="52">p50 222 · p90 321 · p99 471</text>
+      <text class="ms" text-anchor="middle" x="708" y="68">max 796 · min 158</text>
+      <path d="M50,200 L850,200" fill="none" stroke="#d8c9f0" stroke-width="1.2"/>
+      <rect class="bxh" x="64" y="197" width="80" height="3"/><text class="ms" text-anchor="middle" x="104" y="191">1</text>
+      <rect class="bxh" x="160" y="50" width="80" height="150"/><text class="ms" text-anchor="middle" x="200" y="44">258</text>
+      <rect class="bxh" x="256" y="106" width="80" height="94"/><text class="ms" text-anchor="middle" x="296" y="100">161</text>
+      <rect class="bxh" x="352" y="172" width="80" height="28"/><text class="ms" text-anchor="middle" x="392" y="166">48</text>
+      <rect class="bxh" x="448" y="190" width="80" height="10"/><text class="ms" text-anchor="middle" x="488" y="184">18</text>
+      <rect class="bxh" x="544" y="194" width="80" height="6"/><text class="ms" text-anchor="middle" x="584" y="188">10</text>
+      <rect class="bxr" x="640" y="197" width="80" height="3"/><text class="ms" text-anchor="middle" x="680" y="191">1</text>
+      <rect class="bxr" x="736" y="196" width="80" height="4"/><text class="ms" text-anchor="middle" x="776" y="190">3</text>
+      <text class="ts" x="104" y="216">&lt;160</text>
+      <text class="ts" x="200" y="216">160–224</text>
+      <text class="ts" x="296" y="216">224–288</text>
+      <text class="ts" x="392" y="216">288–352</text>
+      <text class="ts" x="488" y="216">352–416</text>
+      <text class="ts" x="584" y="216">416–480</text>
+      <text class="ts" x="680" y="216">480–544</text>
+      <text class="ts" x="776" y="216">&gt;544</text>
+      <path class="wr" stroke-dasharray="5 4" d="M680,38 L680,208"/>
+      <text class="ts" x="680" y="238"><tspan class="red">max_seq_len = 512</tspan> — правее обрезается хвост</text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li>Обрезка <strong>с конца</strong> съедает ответ, а не вопрос: промпт здесь 91% длины. Обрезали &mdash; выкинули как раз то, чему учите</li>
+            <li>На этом срезе за 512 уходит <strong>4 примера (0,8%)</strong>, у троих из них обрезка съела ответ целиком &mdash; они выброшены стадией. Тихо пропустить такие значит обучаться на мусоре</li>
+            <li>Внимание квадратично по длине: <code>max_seq_len</code> вдвое больше &mdash; attention вчетверо дороже. Выбирают по <strong>p95&ndash;p99</strong> распределения, а не «на глаз» и не «пусть будет 4096»</li>
+          </ul>
+          </div>
+          <div>
+            <div class="numbers two" style="margin-top:0">
+              <div class="num hi"><b>0,8%</b><span>обрезано при пороге тревоги 5%</span></div>
+              <div class="num"><b>1,9 ч</b><span>оптимистичный прогноз 3 эпох на этой машине</span></div>
+            </div>
+            <h3>Прогноз времени до запуска</h3>
+            <div class="code-block"><pre>118 415 токенов &times; 3 эпохи / 52 ток/с &asymp; 1,9 ч
+<span class="comment"># 52 ток/с — замер ГЕНЕРАЦИИ из ДЗ 1.</span>
+<span class="comment"># Обучение считает ещё backward и шаг</span>
+<span class="comment"># оптимизатора: реально в 2–3 раза дольше.</span></pre></div>
+            <p class="chip">Доля обрезанных &mdash; метрика, а не лог. Превысила порог &mdash; стадия падает. Это не строгость ради строгости: молча обрезать 40% примеров можно ровно один раз, и узнаете вы об этом на защите.</p>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 10 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 10/12</span>
+        <h1 class="slide-title">Паддинг: с какой стороны и до какой ширины</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 245" role="img" aria-label="Батч из четырёх примеров с паддингом справа и слева">
+      <defs>
+  <marker id="ar_pad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_pad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="24">батч из четырёх примеров разной длины; розовое — pad-токены</text>
+      <text class="tl" x="30" y="46">паддинг справа</text>
+      <rect class="bxo" x="30" y="54" width="390" height="130" rx="12"/>
+      <rect class="bx" x="45" y="68" width="240" height="22" rx="4"/><rect class="bxr" x="285" y="68" width="120" height="22" rx="4"/>
+      <rect class="bx" x="45" y="98" width="180" height="22" rx="4"/><rect class="bxr" x="225" y="98" width="180" height="22" rx="4"/>
+      <rect class="bx" x="45" y="128" width="300" height="22" rx="4"/><rect class="bxr" x="345" y="128" width="60" height="22" rx="4"/>
+      <rect class="bx" x="45" y="158" width="140" height="22" rx="4"/><rect class="bxr" x="185" y="158" width="220" height="22" rx="4"/>
+      <path class="wr" d="M405,196 L405,206"/>
+      <text class="ts" x="225" y="222"><tspan class="red">генерация продолжает паддинг, а не промпт</tspan></text>
+      <text class="tl" x="460" y="46">паддинг слева</text>
+      <rect class="bxo" x="460" y="54" width="390" height="130" rx="12"/>
+      <rect class="bxr" x="475" y="68" width="120" height="22" rx="4"/><rect class="bx" x="595" y="68" width="240" height="22" rx="4"/>
+      <rect class="bxr" x="475" y="98" width="180" height="22" rx="4"/><rect class="bx" x="655" y="98" width="180" height="22" rx="4"/>
+      <rect class="bxr" x="475" y="128" width="60" height="22" rx="4"/><rect class="bx" x="535" y="128" width="300" height="22" rx="4"/>
+      <rect class="bxr" x="475" y="158" width="220" height="22" rx="4"/><rect class="bx" x="695" y="158" width="140" height="22" rx="4"/>
+      <path d="M838,62 L838,186" fill="none" stroke="#16a34a" stroke-width="2"/>
+      <text class="ts" x="655" y="222"><tspan class="grn">последний токен любой строки — конец промпта</tspan></text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li>Для decoder-only генерация продолжает <strong>последний токен</strong> последовательности. При паддинге справа между промптом и первым сгенерированным токеном встаёт мусор &mdash; и ответ начинается с него</li>
+            <li>Дефект виден <strong>только при batch &gt; 1</strong>: на одиночном примере паддинга нет вовсе. Поэтому «у меня всё работает» здесь ничего не доказывает</li>
+            <li>На обучении сторона решает меньше, а решают две другие вещи: <code>labels</code> на паддинге <code>&minus;100</code> (иначе модель учится предсказывать pad) и <code>attention_mask = 0</code></li>
+          </ul>
+          </div>
+          <div>
+            <h3 style="margin-top:0">Ширина батча: замер на train</h3>
+            <table class="comparison-table">
+              <thead><tr><th>Как паддим</th><th>Токенов в батчах</th><th>Из них pad</th></tr></thead>
+              <tbody>
+                <tr><td>до <code>max_seq_len</code> 512</td><td>254 464</td><td>53,5%</td></tr>
+                <tr><td>динамически, случайный порядок</td><td>165 183</td><td>28,3%</td></tr>
+                <tr><td>динамически, сортировка по длине</td><td>119 608</td><td>1,0%</td></tr>
+              </tbody>
+            </table>
+            <p class="chip">Полезных токенов всегда 118 415. Разница &mdash; чистая плата за форму батча. Сортировка по длине почти бесплатна в коде, но делает батчи однородными: это цена, которую платят перемешиванием, поэтому обычно сортируют внутри буфера, а не по всему датасету.</p>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 11 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 11/12</span>
+        <h1 class="slide-title">Packing: экономия и её цена</h1>
+        <div class="slide-content">
+          <figure class="figure-wide">
+            <svg viewBox="0 0 880 225" role="img" aria-label="Последовательности до и после упаковки в бины">
+      <defs>
+  <marker id="ar_pack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#a855f7"/>
+  </marker>
+  <marker id="arr_pack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,1 L9,5 L0,9 z" fill="#dc2626"/>
+  </marker>
+  <style>
+    .bx{fill:#fff;stroke:rgba(147,51,234,.35);stroke-width:1.4}
+    .bxo{fill:none;stroke:#9333ea;stroke-width:1.6}
+    .bxh{fill:#f3e8ff;stroke:#9333ea;stroke-width:1.8}
+    .bxr{fill:#fef2f2;stroke:#dc2626;stroke-width:1.6}
+    .bxg{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.6}
+    .w{fill:none;stroke:#c084fc;stroke-width:2}
+    .wr{fill:none;stroke:#dc2626;stroke-width:1.8}
+    .wd{fill:none;stroke:#a855f7;stroke-width:1.8;stroke-dasharray:5 4}
+    .t{font-family:Inter,sans-serif;font-size:13px;fill:#1a1a2e;text-anchor:middle}
+    .ts{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa;text-anchor:middle}
+    .tl{font-family:Inter,sans-serif;font-size:10.5px;fill:#8888aa}
+    .m{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;fill:#6b21a8}
+    .ms{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:#8888aa}
+    .big{font-family:Inter,sans-serif;font-size:15px;font-weight:600;fill:#6b21a8;text-anchor:middle}
+    .red{fill:#dc2626}
+    .grn{fill:#16a34a}
+  </style>
+</defs>
+      <text class="tl" x="30" y="40">было: одна последовательность — один бин на 512 токенов</text>
+      <rect class="bxo" x="30" y="52" width="380" height="34" rx="6"/><rect class="bxh" x="34" y="56" width="165" height="26" rx="4"/>
+      <rect class="bxo" x="30" y="96" width="380" height="34" rx="6"/><rect class="bxh" x="34" y="100" width="141" height="26" rx="4"/>
+      <rect class="bxo" x="30" y="140" width="380" height="34" rx="6"/><rect class="bxh" x="34" y="144" width="193" height="26" rx="4"/>
+      <text class="ts" x="220" y="192">пустое место оплачивается временем и памятью</text>
+      <text class="tl" x="460" y="40">стало: бин набивается несколькими примерами</text>
+      <rect class="bxo" x="460" y="52" width="380" height="34" rx="6"/>
+      <rect class="bxh" x="464" y="56" width="165" height="26" rx="4"/><rect class="bxg" x="631" y="56" width="141" height="26" rx="4"/><rect class="bxh" x="774" y="56" width="62" height="26" rx="4"/>
+      <rect class="bxo" x="460" y="96" width="380" height="34" rx="6"/>
+      <rect class="bxh" x="464" y="100" width="193" height="26" rx="4"/><rect class="bxg" x="659" y="100" width="165" height="26" rx="4"/>
+      <path class="wr" d="M640,134 C660,162 700,162 720,136" marker-end="url(#arr_pack)"/>
+      <text class="ts" x="680" y="180"><tspan class="red">внимание перетекает к соседу по бину</tspan></text>
+      <text class="ts" x="440" y="214">497 последовательностей → 262 бина, заполнение 88%, шагов при batch 8: 63 → 33</text>
+    </svg>
+          </figure>
+          <div class="split">
+          <div class="split-text">
+          <ul>
+            <li>Медианный пример здесь <strong>222 токена при окне 512</strong>. Packing складывает несколько примеров в одну последовательность и убирает простой: до 3 примеров в бине, заполнение 88%</li>
+            <li>Выигрыш считается в <strong>шагах оптимизатора</strong>, а не в токенах: 63 &rarr; 33 при <code>batch_size 8</code>. Токенов столько же, шагов вдвое меньше</li>
+            <li class="chip-li">Цена: без блочно-диагональной маски токены второго примера <strong>видят первый</strong>. Это не «чуть шумнее» &mdash; это другая задача обучения</li>
+          </ul>
+          </div>
+          <div>
+            <div class="defs" style="grid-template-columns:minmax(0,1fr);margin-top:0">
+              <div class="def hi">
+                <b>Как платить честно</b>
+                <span>Рядом с упакованной последовательностью сохраняются <code>seq_lens</code> &mdash; длины исходных примеров внутри бина. По ним строится блочно-диагональная маска: varlen-режим FlashAttention либо <code>position_ids</code>, перезапускающиеся с нуля на каждом примере. Нет масок &mdash; нет packing: есть тихая порча данных.</span>
+              </div>
+            </div>
+            <h3>Когда packing не нужен</h3>
+            <ul>
+              <li>Примеры и так близки к <code>max_seq_len</code> &mdash; складывать нечего</li>
+              <li>Рантайм не умеет varlen-маску, а переписывать его вы не будете</li>
+              <li>Датасет крошечный: выигрыш в минутах, риск &mdash; в качестве</li>
+            </ul>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 12 ==================== -->
+    <div class="slide">
+      <div class="glass-card">
+        <span class="slide-badge lecture">Лекция 4 &middot; Слайд 12/12</span>
+        <h1 class="slide-title">Итоги и домашняя работа 4</h1>
+        <div class="slide-content">
+          <div class="split">
+          <div class="split-text">
+          <h3 style="margin-top:0">Что забрать с лекции</h3>
+          <ul>
+            <li>Считайте датасет <strong>в токенах</strong> тем токенизатором, которым будете обучать: русский тут 2,46 символа на токен, вдвое-втрое дороже английского</li>
+            <li>Шаблон чата берётся <strong>только</strong> из <code>apply_chat_template</code> и живёт в одном модуле на обучение и инференс. Инвариант: строка инференса &mdash; побайтовый префикс строки обучения</li>
+            <li><code>labels = &minus;100</code> на промпте. Без маски <strong>91%</strong> сигнала уходит на переписывание вопроса, а лосс при этом выглядит лучше</li>
+            <li>Границу маски ставят по токенам, а не по символам; запасной путь по офсетам нужен из-за склейки BPE</li>
+            <li><code>max_seq_len</code> выбирают по p95&ndash;p99 распределения, а долю обрезанных считают и проверяют порогом</li>
+            <li>Паддинг: слева для decoder-only, динамический по батчу, <code>labels</code> на паддинге <code>&minus;100</code>. Packing даёт &minus;48% шагов и требует блочно-диагональной маски</li>
+          </ul>
+          <p class="chip">Литература по теме: Sennrich, Haddow, Birch, «Neural Machine Translation of Rare Words with Subword Units» (2016) &mdash; откуда взялся BPE; документация transformers, разделы Chat templating и Tokenizer summary; карточка модели Qwen3-0.6B и её <code>tokenizer_config.json</code> &mdash; там лежит сам шаблон; описание <code>ignore_index</code> в <code>torch.nn.CrossEntropyLoss</code>.</p>
+          </div>
+
+          <div>
+          <div class="task-box">
+            <h3 style="margin-top:0">Домашняя работа 4</h3>
+            <ul>
+              <li>Стадия <code>tokenize</code> в <code>dvc.yaml</code>: JSONL из ДЗ 3 &rarr; токенизированный датасет на диске</li>
+              <li><strong>Один модуль</strong> <code>src/prompt.py</code> для обучения и инференса; никакой второй копии шаблона</li>
+              <li>Маскирование промпта через <code>&minus;100</code>, динамический паддинг, <code>labels</code> на паддинге <code>&minus;100</code></li>
+              <li>Статистика: распределение длин в токенах, доля обрезанных, суммарное число токенов и <strong>прогноз времени обучения</strong></li>
+              <li>Тест: декодировать позиции, где <code>label != &minus;100</code> &mdash; там обязан быть только ответ ассистента</li>
+              <li>Тест: строка train-пути и строка inference-пути совпадают <strong>байт в байт</strong> на общем префиксе</li>
+              <li>Опционально: packing и замер выигрыша по числу шагов</li>
+            </ul>
+          </div>
+          <h3>Вопросы для самопроверки</h3>
+          <ul>
+            <li>Почему <code>&minus;100</code>, а не <code>0</code>? Что будет при <code>0</code>?</li>
+            <li>Где в вашем пайплайне сломается обучение, если завтра поменяется версия токенизатора?</li>
+            <li>Чем плохо сравнивать лосс двух прогонов с разной маской?</li>
+            <li>Почему дефект «паддинг справа» не видно на одиночном примере?</li>
+          </ul>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn nav-home" title="На главную"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V9h6v12"/></svg> Home</a>
+    <button class="nav-btn" id="btn-prev" title="Назад"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="page-indicator" id="page-indicator">1 / 12</span>
+    <button class="nav-btn" id="btn-next" title="Далее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

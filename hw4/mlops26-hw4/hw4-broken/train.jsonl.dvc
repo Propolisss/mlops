@@ -1,0 +1,13 @@
+md5: 3747e33e81d477ee7c276e7ee8afec52
+frozen: true
+deps:
+- path: hw3/mlops26-hw3/hw3-broken/data/train.jsonl
+  repo:
+    url: ../../..
+    rev: 09f8427ac32980face39a65bca7933609e2a95a2
+    rev_lock: 09f8427ac32980face39a65bca7933609e2a95a2
+outs:
+- md5: c93337791c93106a3d8be91df744a807
+  size: 41596222
+  hash: md5
+  path: data/train.jsonl
