@@ -5,6 +5,11 @@
 # датасет, dvc скажет «всё свежо». params — секции params.yaml, от которых
 # зависит результат. Пути в outs дублируют data.* из params.yaml; их согласованность
 # проверяет tests/check.sh.
+#
+# Вход приходит из DVC-проекта ДЗ 3 через `dvc import` (train.jsonl.dvc,
+# val.jsonl.dvc в корне): там записаны коммит git и md5 выхода split.
+# Другая версия датасета подтягивается `make update REV=<коммит>`, после чего
+# `make repro` пересчитывает tokenize.
 stages:
   tokenize:
     cmd: python -m src.tokenize_data

@@ -1,0 +1,13 @@
+md5: 572757101f880733687d4d624df3999d
+frozen: true
+deps:
+- path: hw3/mlops26-hw3/hw3-broken/data/val.jsonl
+  repo:
+    url: ../../..
+    rev: 09f8427ac32980face39a65bca7933609e2a95a2
+    rev_lock: 09f8427ac32980face39a65bca7933609e2a95a2
+outs:
+- md5: 7f709dd22f39bec40c88f4500d065460
+  size: 5279847
+  hash: md5
+  path: data/val.jsonl
