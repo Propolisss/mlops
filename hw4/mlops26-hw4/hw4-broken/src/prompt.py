@@ -5,9 +5,6 @@
 
 from typing import Any
 
-# Формат реплики Qwen3, выписан из карточки модели.
-TURN = "<|im_start|>{role}\n{content}<|im_end|>\n"
-
 
 def _template_kwargs(params: dict) -> dict:
     """Доп. аргументы шаблона, которые есть не у всех моделей.
@@ -44,15 +41,16 @@ def build_chat_text(
     `add_generation_prompt=False` — путь обучения: весь диалог вместе
         с ответом и eos.
     """
-    if add_generation_prompt:
-        messages, _ = split_messages(messages)
-        return tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True,
-            **_template_kwargs(params),
-        )
-    return "".join(TURN.format(role=m["role"], content=m["content"]) for m in messages)
+    prompt, _ = split_messages(messages)
+    # Оба пути идут через один вызов шаблона модели: ручная сборка теряет
+    # то, что шаблон подставляет сам (у Qwen3 — пустой think-блок перед ответом),
+    # и строка обучения перестаёт начинаться со строки инференса.
+    return tokenizer.apply_chat_template(
+        prompt if add_generation_prompt else messages,
+        tokenize=False,
+        add_generation_prompt=add_generation_prompt,
+        **_template_kwargs(params),
+    )
 
 
 def prompt_token_len(
