@@ -2,7 +2,9 @@
 # Правится ЗДЕСЬ, а не в коде: в src/ не должно быть ни имени модели,
 # ни длин, ни порогов.
 model:
-  name: "Qwen/Qwen3-0.6B"
+  # Модель из ДЗ 1 (профиль Mac Apple Silicon 16 ГБ+). Токенизатор у Qwen3-0.6B
+  # и Qwen3-1.7B один и тот же: словарь, шаблон, eos и pad совпадают.
+  name: "Qwen/Qwen3-1.7B"
   # Qwen3 без этого флага ждёт от модели <think>-блок, и тогда шаблон
   # инференса перестаёт быть префиксом шаблона обучения. См. docs/tokenize_report.md.
   enable_thinking: false
@@ -22,7 +24,10 @@ sample:
   seed: 42
 
 tokenize:
-  max_seq_len: 232
+  # Порог выбран по хвосту распределения своего датасета (docs/tokenize_report.md):
+  # на train p98 = 501, p99 = 543 токена; при 512 обрезано 1.7% train и 2.1% val.
+  # 232 резал 69% примеров, у 3083 из них — ответ целиком.
+  max_seq_len: 512
   truncated_warn_ratio: 0.05
   padding_side: "left"
 
@@ -32,7 +37,7 @@ packing:
 
 train_estimate:
   epochs: 3
-  # 52 ток/с — замер ДЗ 1 на этой машине (Apple Silicon, Qwen3-0.6B, ГЕНЕРАЦИЯ).
-  # Обучение медленнее: forward + backward + optimizer. Реальное число
-  # подставляется сюда после первого прогона ДЗ 5.
-  tokens_per_sec: 52
+  # 43.85 ток/с — медиана замера ДЗ 1 на этой машине (M4 Pro, MPS, Qwen3-1.7B,
+  # bfloat16, ГЕНЕРАЦИЯ). Обучение медленнее: forward + backward + optimizer.
+  # Реальное число подставляется сюда после первого прогона ДЗ 5.
+  tokens_per_sec: 43.85

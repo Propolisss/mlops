@@ -12,6 +12,7 @@ DVC-стадии:
 """
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -21,7 +22,7 @@ from transformers import AutoTokenizer
 from src.collate import LABEL_PAD_ID
 from src.config import load_params
 from src.pack import pack_examples, packing_report
-from src.prompt import build_chat_text
+from src.prompt import build_chat_text, prompt_token_len
 
 METRICS_PATH = Path("metrics/tokenize.json")
 REPORT_PATH = Path("docs/tokenize_report.md")
@@ -41,19 +42,26 @@ def read_jsonl(path: Path) -> list[dict]:
 
 def mask_prompt(input_ids: list[int], n_prompt: int) -> list[int]:
     """labels для лосса."""
-    # TODO: промпт должен быть замаскирован.
-    return list(input_ids)
+    # Промпт модель читает, но не отвечает за него: иначе он, а не ответ,
+    # составляет основную часть обучающего сигнала.
+    n = min(n_prompt, len(input_ids))
+    return [LABEL_PAD_ID] * n + list(input_ids[n:])
 
 
 def encode_example(tokenizer, record: dict, params: dict, max_seq_len: int) -> dict:
     """Один пример -> input_ids / attention_mask / labels + служебная статистика."""
     messages = record["messages"]
     full_text = build_chat_text(tokenizer, messages, params, add_generation_prompt=False)
+    prompt_text = build_chat_text(tokenizer, messages, params, add_generation_prompt=True)
+    # Граница по символам ниже осмысленна только если промпт — префикс полного текста.
+    if not full_text.startswith(prompt_text):
+        raise ValueError(f"{record.get('id')}: строка инференса не префикс строки обучения")
 
-    encoded = tokenizer(full_text, add_special_tokens=False)
+    encoded = tokenizer(full_text, add_special_tokens=False, return_offsets_mapping=True)
     input_ids = encoded["input_ids"]
-    # TODO: найти границу промпта и ответа
-    n_prompt, used_fallback = 0, False
+    n_prompt, used_fallback = prompt_token_len(
+        tokenizer, prompt_text, input_ids, encoded["offset_mapping"]
+    )
 
     full_len = len(input_ids)
     truncated = full_len > max_seq_len
@@ -93,9 +101,17 @@ def describe(values: list[int]) -> dict:
 
 def truncation_stats(metas: list[dict], name: str, params: dict) -> dict:
     """Статистика обрезки по max_seq_len."""
-    # TODO: посчитать долю обрезанных и предупредить, если она выше
-    # tokenize.truncated_warn_ratio.
-    return {}
+    cfg = params["tokenize"]
+    truncated = sum(1 for m in metas if m["truncated"])
+    ratio = truncated / len(metas) if metas else 0.0
+    if ratio > cfg["truncated_warn_ratio"]:
+        print(
+            f"  ВНИМАНИЕ {name}: обрезано {truncated} из {len(metas)} примеров ({ratio:.1%}) "
+            f"при пороге {cfg['truncated_warn_ratio']:.1%} — max_seq_len = {cfg['max_seq_len']} "
+            "срезает ответы, пересмотрите его по распределению длин",
+            file=sys.stderr,
+        )
+    return {"truncated": truncated, "truncated_ratio": round(ratio, 4)}
 
 
 def process_split(
@@ -292,7 +308,9 @@ def render_report(metrics: dict) -> str:
 def main() -> None:
     params = load_params()
     tokenizer = AutoTokenizer.from_pretrained(params["model"]["name"])
-    # TODO: tokenize.padding_side из params.yaml сюда так и не доехал
+    # Сохраняется рядом с тензорами и читается обучением и инференсом: сторона
+    # паддинга должна прийти из params.yaml, а не из дефолта токенизатора.
+    tokenizer.padding_side = params["tokenize"]["padding_side"]
 
     out_dir = Path(params["data"]["out_dir"])
     out_dir.mkdir(parents=True, exist_ok=True)
