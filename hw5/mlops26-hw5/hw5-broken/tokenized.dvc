@@ -1,0 +1,14 @@
+md5: 73249905c2ae19bdd3655ad198585bf7
+frozen: true
+deps:
+- path: hw4/mlops26-hw4/hw4-broken/data/tokenized
+  repo:
+    url: ../../..
+    rev: 4b8462c9178699f5fed902034d0b683e19fc66b3
+    rev_lock: 4b8462c9178699f5fed902034d0b683e19fc66b3
+outs:
+- md5: 3ed326a1f9460b8749f97629f933822b.dir
+  size: 170279360
+  nfiles: 4
+  hash: md5
+  path: data/tokenized

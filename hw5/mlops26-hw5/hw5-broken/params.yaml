@@ -1,0 +1,112 @@
+# Единственная точка конфигурации ДЗ 5. В src/ нет ни имени модели,
+# ни learning rate, ни путей.
+model:
+  name: "Qwen/Qwen3-0.6B"
+  device: "auto"            # auto | cpu | cuda | mps
+  # Базовые веса в bfloat16: они заморожены, точность им не нужна, а память
+  # и время уходят вдвое. Сами матрицы LoRA peft держит в float32 — там идут
+  # крошечные обновления AdamW. На старом CPU без bf16 ставьте float32.
+  dtype: "bfloat16"
+  enable_thinking: false    # как в ДЗ 4: шаблон должен совпадать с обучением
+
+data:
+  # Выход стадии tokenize из ДЗ 4, импортирован через dvc (tokenized.dvc).
+  source_train: "data/tokenized/train.pt"
+  source_val: "data/tokenized/val.pt"
+  # Вход обучения — подвыборка, которую делает стадия sample.
+  train: "data/sample/train.pt"
+  val: "data/sample/val.pt"
+
+# Полный датасет ДЗ 4 — 28 878 train и 3 610 val: эпоха — 3 610 шагов, на mps
+# это больше десяти часов на вариант. Размер подвыборки взят как у эталона
+# курса (~500 примеров), чтобы числа были сопоставимы.
+sample:
+  train_size: 500
+  val_size: 100
+  seed: 42
+
+lora:
+  r: 8
+  alpha: 16                 # итоговый масштаб апдейта alpha / r = 2
+  dropout: 0.05
+  # Только проекции внимания и MLP. embed_tokens и lm_head — это 155 млн
+  # параметров каждый; в modules_to_save они уезжают в адаптер целиком.
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+train:
+  seed: 42
+  epochs: 1
+  batch_size: 2
+  grad_accum: 4             # эффективный батч = 8: память как у батча 2, шаг как у батча 8
+  # 1e-2 разгонял train loss до десятков на первых шагах (docs/defects.md).
+  # 2e-4 — обычный lr для LoRA с r=8.
+  lr: 2.0e-4
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  eval_every: 10            # шагов оптимизатора между замерами val loss
+  # Логиты на весь словарь: 2 примера x 512 токенов x 151 936 x 4 байта = 0,6 ГБ.
+  # Батч 8 на оценке — уже 2,5 ГБ одних логитов, и ноутбук уходит в своп.
+  eval_batch_size: 2
+  gradient_checkpointing: true   # без него на ноутбуке с 16–32 ГБ не влезает
+  max_steps: null           # null — по эпохам; число — обрезать (smoke-тесты)
+
+# Эксперимент по слоям: второй прогон без адаптеров на первых N слоях.
+variants:
+  - name: "all_layers"
+    freeze_first: 0
+  - name: "freeze14"
+    freeze_first: 14
+
+compare:
+  # Ответ — JSON с полем reply: в train медиана 123 токена, p99 — 255.
+  # 40 токенов обрывали бы его на поле tags.
+  max_new_tokens: 256
+  # Пять тикетов из val ДЗ 3, не попавших в подвыборку sample: разные очереди,
+  # типы и приоритеты. Одни и те же для базовой модели и адаптера.
+  prompts:
+    - |-
+      Subject:
+      Connectivity Problem
+
+      Message:
+      Healthcare organization encountered sporadic network disruptions impacting PyTorch, Elasticsearch, and Smart Home Sensors due to Mesh Network instability. Network devices were rebooted, and Red Enterprise Linux systems were updated.
+    - |-
+      Subject:
+      Request for Refund and Replacement
+
+      Message:
+      I am contacting you to seek a refund and a replacement for the faulty devices and software licenses I received. The devices are not working as expected, and the software licenses are not compatible with my system. I would appreciate a refund for the damaged items and a quick replacement with suitable alternatives. Please find attached my purchase receipt for your records. Kindly inform me of the necessary steps to address this matter promptly.
+    - |-
+      Subject:
+      Recent Reports of Sporadic Access Difficulties
+
+      Message:
+      Have encountered sporadic access problems with the SaaS platform, potentially due to recent server updates causing overload. Initial diagnostics involved restarting servers and reverting recent modifications, yet the issues remain. Further investigation is required to identify and resolve the problem. Please continue monitoring the situation and keep us updated as necessary.
+    - |-
+      Subject:
+      Error Detected in Payment Processing System
+
+      Message:
+      We are experiencing difficulties with the billing system, which is hindering our ability to process payments. This may be related to a recent software update. Despite restarting the systems and verifying account information, the problem persists. We would greatly appreciate your assistance in resolving this issue promptly to prevent service disruptions. Please help us address the billing system problem.
+    - |-
+      Subject:
+      Details of Pricing Plans
+
+      Message:
+      I am interested in learning about the project management SaaS offerings. Could you provide details on the available pricing plans and any trial options? I would also like to know about the features and benefits of each plan, as well as any discounts or promotions that may be available. This information will help me make an informed decision on whether the SaaS is the right fit for my needs.
+  # Самая явная из пяти формулировок system в датасете: перечисляет поля JSON.
+  system: "Triage an incoming support email. Return one JSON object with the fields queue, type, priority, tags and reply. The reply field holds the answer the agent should send. Do not write anything outside the JSON."
+  # Разметка этих тикетов в датасете — для сверки в docs/compare.md.
+  references:
+    - "IT Support / Incident / medium"
+    - "Returns and Exchanges / Change / high"
+    - "Service Outages and Maintenance / Problem / low"
+    - "Billing and Payments / Problem / high"
+    - "Product Support / Request / low"
+
+paths:
+  models: "models"
+  metrics: "metrics"
+  curves: "docs/curves.png"
+  compare: "docs/compare.md"
