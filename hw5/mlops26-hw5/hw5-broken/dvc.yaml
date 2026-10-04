@@ -1,19 +1,39 @@
 # Стадии ДЗ 5 — продолжение пайплайна из ДЗ 3 и ДЗ 4:
-#   split (ДЗ 3) -> tokenize (ДЗ 4) -> train -> compare
+#   split (ДЗ 3) -> tokenize (ДЗ 4) -> sample -> train -> plot, compare
 # deps — данные И код: забыть src/train.py — и правка цикла обучения
 # не пересчитает адаптер, dvc скажет «всё свежо».
+#
+# Выход tokenize приходит из DVC-проекта ДЗ 4 через `dvc import`
+# (tokenized.dvc в корне): там записаны коммит git и md5 тензоров.
 stages:
-  train_all:
-    cmd: python -m src.train --variant all_layers
+  sample:
+    cmd: python -m src.sample
     deps:
       - data/tokenized/train.pt
       - data/tokenized/val.pt
+      - src/sample.py
+      - src/config.py
+    params:
+      - sample
+      - data
+    outs:
+      - data/sample
+    metrics:
+      - metrics/sample.json:
+          cache: false
+
+  train_all:
+    cmd: python -m src.train --variant all_layers
+    deps:
+      - data/sample/train.pt
+      - data/sample/val.pt
       - src/train.py
       - src/data.py
       - src/runtime.py
       - src/config.py
     params:
       - model
+      - data
       - lora
       - train
       - variants
@@ -26,14 +46,15 @@ stages:
   train_freeze:
     cmd: python -m src.train --variant freeze14
     deps:
-      - data/tokenized/train.pt
-      - data/tokenized/val.pt
+      - data/sample/train.pt
+      - data/sample/val.pt
       - src/train.py
       - src/data.py
       - src/runtime.py
       - src/config.py
     params:
       - model
+      - data
       - lora
       - train
       - variants
@@ -43,12 +64,25 @@ stages:
       - metrics/train_freeze14.json:
           cache: false
 
+  plot:
+    cmd: python -m src.plot
+    deps:
+      - metrics/train_all_layers.json
+      - metrics/train_freeze14.json
+      - src/plot.py
+    params:
+      - paths.curves
+    outs:
+      - docs/curves.png:
+          cache: false
+
   compare:
     cmd: python -m src.compare --variant all_layers
     deps:
       - models/adapter_all_layers
       - src/compare.py
     params:
+      - model
       - compare
     outs:
       - docs/compare.md:

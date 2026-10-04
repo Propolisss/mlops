@@ -1,0 +1,295 @@
+schema: '2.0'
+stages:
+  sample:
+    cmd: python -m src.sample
+    deps:
+    - path: data/tokenized/train.pt
+      hash: md5
+      md5: 673e45bcfcf5d695815a61a277ae4818
+      size: 76000417
+    - path: data/tokenized/val.pt
+      hash: md5
+      md5: bf206c96ef74c88e98fd063e0d15dccc
+      size: 9724949
+    - path: src/config.py
+      hash: md5
+      md5: d1af94455f9641952ff6c34f46ac6060
+      size: 336
+    - path: src/sample.py
+      hash: md5
+      md5: e962c306d9248e8ee38579437f10f52c
+      size: 2682
+    params:
+      params.yaml:
+        data:
+          source_train: data/tokenized/train.pt
+          source_val: data/tokenized/val.pt
+          train: data/sample/train.pt
+          val: data/sample/val.pt
+        sample:
+          train_size: 500
+          val_size: 100
+          seed: 42
+    outs:
+    - path: data/sample
+      hash: md5
+      md5: 2540c4d48d4ff7b2ffc3593a02477b52.dir
+      size: 1615926
+      nfiles: 2
+    - path: metrics/sample.json
+      hash: md5
+      md5: fd0dbb678d0cb25f5a72b76edf731906
+      size: 321
+  train_all:
+    cmd: python -m src.train --variant all_layers
+    deps:
+    - path: data/sample/train.pt
+      hash: md5
+      md5: 22c617e928bbac554cbcb809397e3948
+      size: 1336865
+    - path: data/sample/val.pt
+      hash: md5
+      md5: 2e3f2280076ad31d912756c49d53f594
+      size: 279061
+    - path: src/config.py
+      hash: md5
+      md5: d1af94455f9641952ff6c34f46ac6060
+      size: 336
+    - path: src/data.py
+      hash: md5
+      md5: d78a3ccae087e8bcfdc3b3c945d66089
+      size: 1985
+    - path: src/runtime.py
+      hash: md5
+      md5: 19e2a30dbb77c96c004c0e26f360c53c
+      size: 2225
+    - path: src/train.py
+      hash: md5
+      md5: 47e1a1bfdf09901de3f15bac8444109c
+      size: 12883
+    params:
+      params.yaml:
+        data:
+          source_train: data/tokenized/train.pt
+          source_val: data/tokenized/val.pt
+          train: data/sample/train.pt
+          val: data/sample/val.pt
+        lora:
+          r: 8
+          alpha: 16
+          dropout: 0.05
+          target_modules:
+          - q_proj
+          - k_proj
+          - v_proj
+          - o_proj
+          - gate_proj
+          - up_proj
+          - down_proj
+        model:
+          name: Qwen/Qwen3-0.6B
+          device: auto
+          dtype: bfloat16
+          enable_thinking: false
+        train:
+          seed: 42
+          epochs: 1
+          batch_size: 2
+          grad_accum: 4
+          lr: 0.0002
+          warmup_ratio: 0.03
+          weight_decay: 0.0
+          max_grad_norm: 1.0
+          eval_every: 10
+          eval_batch_size: 2
+          gradient_checkpointing: true
+          max_steps:
+        variants:
+        - name: all_layers
+          freeze_first: 0
+        - name: freeze14
+          freeze_first: 14
+    outs:
+    - path: metrics/train_all_layers.json
+      hash: md5
+      md5: 29013e088a6d86f36bed550f138e00ad
+      size: 3241
+    - path: models/adapter_all_layers
+      hash: md5
+      md5: f0b419ef0919ec45131f9a16deb234ff.dir
+      size: 31670338
+      nfiles: 6
+  train_freeze:
+    cmd: python -m src.train --variant freeze14
+    deps:
+    - path: data/sample/train.pt
+      hash: md5
+      md5: 22c617e928bbac554cbcb809397e3948
+      size: 1336865
+    - path: data/sample/val.pt
+      hash: md5
+      md5: 2e3f2280076ad31d912756c49d53f594
+      size: 279061
+    - path: src/config.py
+      hash: md5
+      md5: d1af94455f9641952ff6c34f46ac6060
+      size: 336
+    - path: src/data.py
+      hash: md5
+      md5: d78a3ccae087e8bcfdc3b3c945d66089
+      size: 1985
+    - path: src/runtime.py
+      hash: md5
+      md5: 19e2a30dbb77c96c004c0e26f360c53c
+      size: 2225
+    - path: src/train.py
+      hash: md5
+      md5: 47e1a1bfdf09901de3f15bac8444109c
+      size: 12883
+    params:
+      params.yaml:
+        data:
+          source_train: data/tokenized/train.pt
+          source_val: data/tokenized/val.pt
+          train: data/sample/train.pt
+          val: data/sample/val.pt
+        lora:
+          r: 8
+          alpha: 16
+          dropout: 0.05
+          target_modules:
+          - q_proj
+          - k_proj
+          - v_proj
+          - o_proj
+          - gate_proj
+          - up_proj
+          - down_proj
+        model:
+          name: Qwen/Qwen3-0.6B
+          device: auto
+          dtype: bfloat16
+          enable_thinking: false
+        train:
+          seed: 42
+          epochs: 1
+          batch_size: 2
+          grad_accum: 4
+          lr: 0.0002
+          warmup_ratio: 0.03
+          weight_decay: 0.0
+          max_grad_norm: 1.0
+          eval_every: 10
+          eval_batch_size: 2
+          gradient_checkpointing: true
+          max_steps:
+        variants:
+        - name: all_layers
+          freeze_first: 0
+        - name: freeze14
+          freeze_first: 14
+    outs:
+    - path: metrics/train_freeze14.json
+      hash: md5
+      md5: 659b4c5b1461be626073987c5ef8430e
+      size: 3243
+    - path: models/adapter_freeze14
+      hash: md5
+      md5: e03fe89b8366c623a96ffd6f110676ca.dir
+      size: 21552090
+      nfiles: 6
+  plot:
+    cmd: python -m src.plot
+    deps:
+    - path: metrics/train_all_layers.json
+      hash: md5
+      md5: 29013e088a6d86f36bed550f138e00ad
+      size: 3241
+    - path: metrics/train_freeze14.json
+      hash: md5
+      md5: 659b4c5b1461be626073987c5ef8430e
+      size: 3243
+    - path: src/plot.py
+      hash: md5
+      md5: 1766dc7e2a22898bd0ec38dde7256d2b
+      size: 1576
+    params:
+      params.yaml:
+        paths.curves: docs/curves.png
+    outs:
+    - path: docs/curves.png
+      hash: md5
+      md5: 23f366f3efd5cec07858e84c6fb96d7c
+      size: 95093
+  compare:
+    cmd: python -m src.compare --variant all_layers
+    deps:
+    - path: models/adapter_all_layers
+      hash: md5
+      md5: f0b419ef0919ec45131f9a16deb234ff.dir
+      size: 31670338
+      nfiles: 6
+    - path: src/compare.py
+      hash: md5
+      md5: 87fbfd3d9b432ddbfe9c8c6110cad058
+      size: 6778
+    params:
+      params.yaml:
+        compare:
+          max_new_tokens: 256
+          prompts:
+          - "Subject:\nConnectivity Problem\n\nMessage:\nHealthcare organization encountered
+            sporadic network disruptions impacting PyTorch, Elasticsearch, and Smart
+            Home Sensors due to Mesh Network instability. Network devices were rebooted,
+            and Red Enterprise Linux systems were updated."
+          - "Subject:\nRequest for Refund and Replacement\n\nMessage:\nI am contacting
+            you to seek a refund and a replacement for the faulty devices and software
+            licenses I received. The devices are not working as expected, and the
+            software licenses are not compatible with my system. I would appreciate
+            a refund for the damaged items and a quick replacement with suitable alternatives.
+            Please find attached my purchase receipt for your records. Kindly inform
+            me of the necessary steps to address this matter promptly."
+          - "Subject:\nRecent Reports of Sporadic Access Difficulties\n\nMessage:\n\
+            Have encountered sporadic access problems with the SaaS platform, potentially
+            due to recent server updates causing overload. Initial diagnostics involved
+            restarting servers and reverting recent modifications, yet the issues
+            remain. Further investigation is required to identify and resolve the
+            problem. Please continue monitoring the situation and keep us updated
+            as necessary."
+          - "Subject:\nError Detected in Payment Processing System\n\nMessage:\nWe
+            are experiencing difficulties with the billing system, which is hindering
+            our ability to process payments. This may be related to a recent software
+            update. Despite restarting the systems and verifying account information,
+            the problem persists. We would greatly appreciate your assistance in resolving
+            this issue promptly to prevent service disruptions. Please help us address
+            the billing system problem."
+          - "Subject:\nDetails of Pricing Plans\n\nMessage:\nI am interested in learning
+            about the project management SaaS offerings. Could you provide details
+            on the available pricing plans and any trial options? I would also like
+            to know about the features and benefits of each plan, as well as any discounts
+            or promotions that may be available. This information will help me make
+            an informed decision on whether the SaaS is the right fit for my needs."
+          system: Triage an incoming support email. Return one JSON object with 
+            the fields queue, type, priority, tags and reply. The reply field 
+            holds the answer the agent should send. Do not write anything 
+            outside the JSON.
+          references:
+          - IT Support / Incident / medium
+          - Returns and Exchanges / Change / high
+          - Service Outages and Maintenance / Problem / low
+          - Billing and Payments / Problem / high
+          - Product Support / Request / low
+        model:
+          name: Qwen/Qwen3-0.6B
+          device: auto
+          dtype: bfloat16
+          enable_thinking: false
+    outs:
+    - path: docs/compare.md
+      hash: md5
+      md5: 3b7cea1d0539f9016be2384a90a93c53
+      size: 5612
+    - path: metrics/compare_all_layers.json
+      hash: md5
+      md5: 0e76890e673ceb51235893a9f3b1efb9
+      size: 4541

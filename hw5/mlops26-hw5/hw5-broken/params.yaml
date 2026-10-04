@@ -10,9 +10,20 @@ model:
   enable_thinking: false    # как в ДЗ 4: шаблон должен совпадать с обучением
 
 data:
-  # Выход стадии tokenize из ДЗ 4. У студента — свой путь.
-  train: "data/tokenized/train.pt"
-  val: "data/tokenized/val.pt"
+  # Выход стадии tokenize из ДЗ 4, импортирован через dvc (tokenized.dvc).
+  source_train: "data/tokenized/train.pt"
+  source_val: "data/tokenized/val.pt"
+  # Вход обучения — подвыборка, которую делает стадия sample.
+  train: "data/sample/train.pt"
+  val: "data/sample/val.pt"
+
+# Полный датасет ДЗ 4 — 28 878 train и 3 610 val: эпоха — 3 610 шагов, на mps
+# это больше десяти часов на вариант. Размер подвыборки взят как у эталона
+# курса (~500 примеров), чтобы числа были сопоставимы.
+sample:
+  train_size: 500
+  val_size: 100
+  seed: 42
 
 lora:
   r: 8
@@ -27,7 +38,9 @@ train:
   epochs: 1
   batch_size: 2
   grad_accum: 4             # эффективный батч = 8: память как у батча 2, шаг как у батча 8
-  lr: 1.0e-2
+  # 1e-2 разгонял train loss до десятков на первых шагах (docs/defects.md).
+  # 2e-4 — обычный lr для LoRA с r=8.
+  lr: 2.0e-4
   warmup_ratio: 0.03
   weight_decay: 0.0
   max_grad_norm: 1.0
@@ -46,15 +59,51 @@ variants:
     freeze_first: 14
 
 compare:
-  max_new_tokens: 40
-  # Пять фиксированных промптов: одни и те же для базовой модели и адаптера.
+  # Ответ — JSON с полем reply: в train медиана 123 токена, p99 — 255.
+  # 40 токенов обрывали бы его на поле tags.
+  max_new_tokens: 256
+  # Пять тикетов из val ДЗ 3, не попавших в подвыборку sample: разные очереди,
+  # типы и приоритеты. Одни и те же для базовой модели и адаптера.
   prompts:
-    - "Тема:\nАртериальная гипертензия у взрослых\n\nВопрос:\nЦелевой уровень систолического АД у большинства пациентов моложе 65 лет составляет\n\nВарианты ответа:\n0. 150–159 мм рт. ст.\n1. 120–130 мм рт. ст.\n2. 140–149 мм рт. ст.\n3. менее 110 мм рт. ст."
-    - "Тема:\nСахарный диабет 2 типа у взрослых\n\nВопрос:\nПрепаратом первой линии при отсутствии противопоказаний является\n\nВарианты ответа:\n0. инсулин гларгин\n1. метформин\n2. глибенкламид\n3. акарбоза"
-    - "Тема:\nВнебольничная пневмония у взрослых\n\nВопрос:\nОсновным методом подтверждения диагноза пневмонии является\n\nВарианты ответа:\n0. общий анализ крови\n1. рентгенография органов грудной клетки\n2. бактериоскопия мокроты\n3. спирометрия"
-    - "Тема:\nЖелезодефицитная анемия\n\nВопрос:\nНаиболее информативный показатель запасов железа в организме\n\nВарианты ответа:\n0. сывороточное железо\n1. цветовой показатель\n2. ферритин сыворотки\n3. количество ретикулоцитов"
-    - "Тема:\nОстрый аппендицит у взрослых\n\nВопрос:\nСимптом Щёткина–Блюмберга указывает на\n\nВарианты ответа:\n0. раздражение брюшины\n1. кишечную непроходимость\n2. почечную колику\n3. холецистит"
-  system: "Ты отвечаешь на русскоязычные тестовые вопросы НМО. Дан вопрос и варианты ответа с нумерацией с 0. Выбери один правильный вариант. Ответь только номером варианта и текстом ответа, без объяснений."
+    - |-
+      Subject:
+      Connectivity Problem
+
+      Message:
+      Healthcare organization encountered sporadic network disruptions impacting PyTorch, Elasticsearch, and Smart Home Sensors due to Mesh Network instability. Network devices were rebooted, and Red Enterprise Linux systems were updated.
+    - |-
+      Subject:
+      Request for Refund and Replacement
+
+      Message:
+      I am contacting you to seek a refund and a replacement for the faulty devices and software licenses I received. The devices are not working as expected, and the software licenses are not compatible with my system. I would appreciate a refund for the damaged items and a quick replacement with suitable alternatives. Please find attached my purchase receipt for your records. Kindly inform me of the necessary steps to address this matter promptly.
+    - |-
+      Subject:
+      Recent Reports of Sporadic Access Difficulties
+
+      Message:
+      Have encountered sporadic access problems with the SaaS platform, potentially due to recent server updates causing overload. Initial diagnostics involved restarting servers and reverting recent modifications, yet the issues remain. Further investigation is required to identify and resolve the problem. Please continue monitoring the situation and keep us updated as necessary.
+    - |-
+      Subject:
+      Error Detected in Payment Processing System
+
+      Message:
+      We are experiencing difficulties with the billing system, which is hindering our ability to process payments. This may be related to a recent software update. Despite restarting the systems and verifying account information, the problem persists. We would greatly appreciate your assistance in resolving this issue promptly to prevent service disruptions. Please help us address the billing system problem.
+    - |-
+      Subject:
+      Details of Pricing Plans
+
+      Message:
+      I am interested in learning about the project management SaaS offerings. Could you provide details on the available pricing plans and any trial options? I would also like to know about the features and benefits of each plan, as well as any discounts or promotions that may be available. This information will help me make an informed decision on whether the SaaS is the right fit for my needs.
+  # Самая явная из пяти формулировок system в датасете: перечисляет поля JSON.
+  system: "Triage an incoming support email. Return one JSON object with the fields queue, type, priority, tags and reply. The reply field holds the answer the agent should send. Do not write anything outside the JSON."
+  # Разметка этих тикетов в датасете — для сверки в docs/compare.md.
+  references:
+    - "IT Support / Incident / medium"
+    - "Returns and Exchanges / Change / high"
+    - "Service Outages and Maintenance / Problem / low"
+    - "Billing and Payments / Problem / high"
+    - "Product Support / Request / low"
 
 paths:
   models: "models"

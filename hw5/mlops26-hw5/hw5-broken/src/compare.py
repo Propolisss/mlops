@@ -18,7 +18,29 @@ from src.runtime import resolve_device, resolve_dtype
 
 
 def load_adapter_tokenizer(adapter_dir: Path):
-    return AutoTokenizer.from_pretrained(load_params()["model"]["name"])
+    """Токенизатор из папки адаптера, а не по имени из params.yaml: у того,
+    кому отдали адаптер, нет нашего конфига, а шаблон чата должен быть тем же,
+    что при обучении."""
+    if not (adapter_dir / "tokenizer_config.json").exists():
+        raise SystemExit(f"в {adapter_dir} нет токенизатора — адаптер сохранён без него, "
+                         "перезапустите make train")
+    return AutoTokenizer.from_pretrained(adapter_dir)
+
+
+FIELDS = ("queue", "type", "priority")
+
+
+def routing(answer: str) -> list[str] | None:
+    """[queue, type, priority] из ответа, если это JSON формата датасета.
+
+    Строго json.loads и точное сравнение строк: обёртка ```json, текст вокруг
+    или "High" вместо "high" — уже не тот формат, который ждёт система,
+    разбирающая ответ."""
+    try:
+        obj = json.loads(answer)
+        return [str(obj[f]) for f in FIELDS]
+    except (ValueError, KeyError, TypeError):
+        return None
 
 
 @torch.no_grad()
@@ -61,6 +83,15 @@ def main() -> None:
     after = generate(model, tok, prompts, system, params, device)
 
     result = {"variant": args.variant, "adapter_dir": str(adapter_dir), "base": before, "adapter": after}
+    refs = [r.split(" / ") for r in params["compare"].get("references") or []]
+    for name, answers in (("base", before), ("adapter", after)):
+        if answers:
+            routes = [routing(x) for x in answers]
+            result[f"{name}_valid_json"] = sum(r is not None for r in routes)
+            result[f"{name}_match"] = {
+                f: sum(r is not None and r[k] == ref[k] for r, ref in zip(routes, refs))
+                for k, f in enumerate(FIELDS)
+            }
     out = Path(args.out) if args.out else Path(params["paths"]["metrics"]) / f"compare_{args.variant}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -68,10 +99,27 @@ def main() -> None:
         print(f"-> {out}")
         return
 
+    def cell(answer: str) -> str:
+        r = routing(answer)
+        return "не JSON" if r is None else " / ".join(r)
+
+    n = len(prompts)
+    match = " · ".join(f"{f}: база {result['base_match'][f]}, адаптер {result['adapter_match'][f]}"
+                       for f in FIELDS) if refs else "разметка не задана"
+
     lines = ["# Базовая модель против адаптера", "",
-             f"Адаптер: `{adapter_dir}`. Генерация жадная, до {params['compare']['max_new_tokens']} токенов.", ""]
+             f"Адаптер: `{adapter_dir}`. Генерация жадная, до {params['compare']['max_new_tokens']} токенов.",
+             "Тикеты — из val, в подвыборку обучения и оценки не попадали.", "",
+             f"Валидный JSON: база {result['base_valid_json']} из {n}, адаптер {result['adapter_valid_json']} из {n}.",
+             "",
+             f"Совпадений с разметкой из {n}, по полям — {match}.", "",
+             "| # | Разметка датасета | База | Адаптер |", "|---|---|---|---|"]
+    for i, (b, a) in enumerate(zip(before, after)):
+        ref = " / ".join(refs[i]) if refs else "—"
+        lines.append(f"| {i + 1} | {ref} | {cell(b)} | {cell(a)} |")
+    lines.append("")
     for i, (p, b, a) in enumerate(zip(prompts, before, after), 1):
-        q = p.split("Вопрос:\n")[-1].split("\n\nВарианты")[0]
+        q = p.split("Subject:\n")[-1].split("\n\nMessage")[0]
         lines += [f"## {i}. {q}", "", "**База:**", "", f"> {b.replace(chr(10), ' / ')}", "",
                   "**Адаптер:**", "", f"> {a.replace(chr(10), ' / ')}", ""]
     Path(params["paths"]["compare"]).write_text("\n".join(lines), encoding="utf-8")

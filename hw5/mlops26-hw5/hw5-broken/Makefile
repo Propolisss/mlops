@@ -1,10 +1,17 @@
-.PHONY: install train train-all train-freeze compare plot check clean distclean
+.PHONY: install sample train train-all train-freeze compare plot check repro push clean distclean
 
 install:
 	uv sync
 
+# Подвыборка из выхода tokenize ДЗ 4 (data/tokenized, импорт через dvc).
+sample:
+	uv run python -m src.sample
+
+data/sample/train.pt:
+	uv run python -m src.sample
+
 # Два прогона: адаптеры на всех слоях и с замороженными первыми 14.
-train: train-all train-freeze plot
+train: data/sample/train.pt train-all train-freeze plot
 
 train-all:
 	uv run python -m src.train --variant all_layers
@@ -21,6 +28,14 @@ compare:
 
 check:
 	bash tests/check.sh
+
+# Те же команды, объявленные стадиями в dvc.yaml: пересчитать то, у чего
+# изменились deps или params, и отправить адаптеры в локальный remote.
+repro:
+	uv run dvc repro
+
+push:
+	uv run dvc push
 
 # clean — артефакты обучения (адаптеры, метрики, графики); всё пересоздаётся make train.
 # distclean — ещё и .venv (~0,8 ГБ): когда ДЗ сдано и место нужнее.
