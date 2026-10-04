@@ -7,7 +7,7 @@
 обычно прячется, — где считается val loss, как копятся градиенты, что
 сохраняется рядом с адаптером.
 
-Что сохраняется в models/adapter_<variant>/: адаптер.
+Что сохраняется в models/adapter_<variant>/: адаптер, токенизатор и шаблон чата.
 В metrics/train_<variant>.json — кривые train/val loss, время, пиковая память,
 число обучаемых параметров, вес адаптера и отпечаток входов.
 """
@@ -31,7 +31,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedul
 
 from src.config import load_params
 from src.data import LABEL_PAD_ID, batches, load_split
-from src.runtime import allocated_bytes, memory_metric, resolve_device, resolve_dtype
+from src.runtime import allocated_bytes, memory_metric, resolve_device, resolve_dtype, set_seed
 
 
 TRAIN_CODE = ("src/train.py", "src/data.py", "src/runtime.py", "src/config.py")
@@ -54,12 +54,16 @@ def inputs_fingerprint(params: dict) -> str:
 
 def lora_config(params: dict, n_layers: int, freeze_first: int) -> LoraConfig:
     cfg = params["lora"]
+    # Без layers_to_transform peft вешает адаптеры на все слои, и freeze_first
+    # ни на что не влияет: вариант freeze14 обучал те же 28 слоёв.
+    layers = list(range(freeze_first, n_layers)) if freeze_first else None
     return LoraConfig(
         r=cfg["r"],
         lora_alpha=cfg["alpha"],
         lora_dropout=cfg["dropout"],
         target_modules=cfg["target_modules"],
         modules_to_save=cfg.get("modules_to_save"),
+        layers_to_transform=layers,
         task_type="CAUSAL_LM",
     )
 
@@ -116,6 +120,9 @@ def main() -> None:
         val_blob["examples"] = val_blob["examples"][:args.val_limit]
     pad_id = train_blob["pad_token_id"]
 
+    # До загрузки модели: сид определяет инициализацию матриц A в LoRA, маски
+    # dropout и порядок батчей.
+    set_seed(tcfg["seed"])
     tokenizer = AutoTokenizer.from_pretrained(params["model"]["name"])
     model = AutoModelForCausalLM.from_pretrained(params["model"]["name"], dtype=dtype).to(device)
     n_layers = model.config.num_hidden_layers
@@ -146,7 +153,6 @@ def main() -> None:
     )
 
     eval_bs = tcfg.get("eval_batch_size", tcfg["batch_size"])
-    base_val = None   # TODO: с чем сравнивать дообученную модель?
     curve_train: list[list[float]] = []
     curve_val: list[list[float]] = []
     print(f"[{args.variant}] устройство {device}, обучаемых {trainable:,} из {total:,} "
@@ -154,17 +160,36 @@ def main() -> None:
 
     peak = allocated_bytes(device)
     started = time.perf_counter()
-    step, micro, accum_loss, diverged = 0, 0, 0.0, False
-    eval_seconds = 0.0
+    eval_seconds = 0.0   # вычитается из времени: в seconds — чистое обучение
+
+    def run_eval(at_step: int) -> float:
+        nonlocal eval_seconds
+        t0 = time.perf_counter()
+        loss = evaluate(model, val_blob["examples"], pad_id, device, eval_bs)
+        eval_seconds += time.perf_counter() - t0
+        curve_val.append([at_step, round(loss, 4)])
+        return loss
+
+    # Шаг 0 — лосс базовой модели: матрицы B в LoRA инициализированы нулями,
+    # адаптер пока ничего не добавляет. Без этой точки «val в конце» не с чем сравнить.
+    base_val = round(run_eval(0), 4)
+    print(f"  шаг 0/{total_steps}: val {base_val:.4f} (базовая модель)")
+
+    accum = tcfg["grad_accum"]
+    step, accum_loss, diverged = 0, 0.0, False
     for epoch in range(tcfg["epochs"]):
-        for batch in batches(examples, tcfg["batch_size"], pad_id, shuffle=True, seed=tcfg["seed"] + epoch):
+        for i, batch in enumerate(batches(examples, tcfg["batch_size"], pad_id, shuffle=True,
+                                          seed=tcfg["seed"] + epoch)):
+            # Хвост эпохи короче grad_accum (250 микробатчей = 62 по 4 + 2): делим
+            # на фактический размер группы и шагаем по нему, иначе последние
+            # примеры эпохи копят градиент впустую и шагов на один меньше расчётных.
+            group = min(accum, micro_per_epoch - i // accum * accum)
             batch = {k: v.to(device) for k, v in batch.items()}
-            loss = model(**batch).loss / tcfg["grad_accum"]
+            loss = model(**batch).loss / group
             loss.backward()
             accum_loss += loss.item()
-            micro += 1
             peak = max(peak, allocated_bytes(device))
-            if micro % tcfg["grad_accum"]:
+            if (i + 1) % accum and i + 1 < micro_per_epoch:
                 continue
             torch.nn.utils.clip_grad_norm_(model.parameters(), tcfg["max_grad_norm"])
             optimizer.step()
@@ -178,7 +203,8 @@ def main() -> None:
                 break
             accum_loss = 0.0
             if step % tcfg["eval_every"] == 0 or step == total_steps:
-                print(f"  шаг {step}/{total_steps}: train {curve_train[-1][1]:.4f}")
+                val = run_eval(step)
+                print(f"  шаг {step}/{total_steps}: train {curve_train[-1][1]:.4f}, val {val:.4f}")
             if step >= total_steps:
                 break
         if diverged or step >= total_steps:
@@ -188,6 +214,9 @@ def main() -> None:
     out_root = Path(args.out) if args.out else Path(params["paths"]["models"])
     adapter_dir = out_root / f"adapter_{args.variant}"
     model.save_pretrained(adapter_dir)
+    # Токенизатор и шаблон чата едут вместе с адаптером: на чужой машине нет
+    # params.yaml, и без них неизвестно, каким текстом адаптер обучали.
+    tokenizer.save_pretrained(adapter_dir)
 
     tokens = sum(len(e["input_ids"]) for e in examples) * tcfg["epochs"]
     metrics = {
