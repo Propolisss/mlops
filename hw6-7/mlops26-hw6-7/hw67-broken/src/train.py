@@ -2,6 +2,7 @@
 import gc
 import math
 import os
+import random
 import time
 from pathlib import Path
 
@@ -14,6 +15,17 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from src.common import save_json
 from src.data import batches, load_split
 from src.runtime import allocated_bytes, memory_metric, resolve_device, resolve_dtype, set_seed
+
+
+def pool(examples, limit, seed):
+    """limit примеров случайной выборкой с фиксированным seed.
+
+    split ДЗ 3 записан сгруппированным по темам: первые 32 строки train — одна тема
+    одной очереди, первые 8 val — другая. Срез по порядку давал учебный пул и val
+    из одной темы, а выбор по loss измерял эту тему, а не задачу.
+    """
+    idx = sorted(random.Random(seed).sample(range(len(examples)), min(limit, len(examples))))
+    return [examples[i] for i in idx]
 
 
 @torch.no_grad()
@@ -44,8 +56,8 @@ def train(params, candidate, out, log):
     for b in (tr, va):
         if b.get("model") != m["name"]:
             raise ValueError("Тензоры токенизированы другой моделью: повторите ДЗ 4 с выбранной моделью")
-    examples = tr["examples"][:t["train_limit"]]
-    val = va["examples"][:t["val_limit"]]
+    examples = pool(tr["examples"], t["train_limit"], t["seed"])
+    val = pool(va["examples"], t["val_limit"], t["seed"])
     if tr["pad_token_id"] != va["pad_token_id"]:
         raise ValueError("pad_token_id train и val различаются")
     tok = AutoTokenizer.from_pretrained(m["name"], revision=m["revision"])
