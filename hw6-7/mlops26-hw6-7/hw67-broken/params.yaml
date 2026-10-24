@@ -6,8 +6,17 @@ model:
   dtype: bfloat16
   enable_thinking: false
 data:
+  # Выход split ДЗ 3, импорт через dvc (data/split/*.jsonl.dvc, коммит 09f8427).
+  split_train: data/split/train.jsonl
+  split_val: data/split/val.jsonl
+  split_test: data/split/test.jsonl
+  # Выход стадии tokenize (prep/tokenize.py) — та же логика, что в ДЗ 4.
   train: data/tokenized/train.pt
   val: data/tokenized/val.pt
+tokenize:
+  # Как в ДЗ 4: p99 длины train — 543 токена, при 512 обрезано 1.7% train.
+  max_seq_len: 512
+  padding_side: left
 train:
   seed: 42
   max_steps: 4
@@ -36,8 +45,11 @@ registry:
   # Порог относительный к базе на ТОМ ЖЕ val; меньше loss — лучше.
   max_val_ratio: 1.0
 generation:
-  max_new_tokens: 16
-  system: "Выбери один правильный вариант. Ответь номером и текстом ответа."
+  # Примеры генерации в каждом run: два тикета из val ДЗ 3 (en и de) и одна из
+  # пяти формулировок system обучающего набора. 48 токенов хватает на queue,
+  # type и priority; поле reply обрывается — для сравнения кандидатов оно не нужно.
+  max_new_tokens: 48
+  system: "Triage an incoming support email. Return one JSON object with the fields queue, type, priority, tags and reply. The reply field holds the answer the agent should send. Do not write anything outside the JSON."
   prompts:
-    - "Метод подтверждения пневмонии: 0. общий анализ крови; 1. рентгенография грудной клетки; 2. спирометрия."
-    - "Показатель запасов железа: 0. сывороточное железо; 1. ферритин; 2. гемоглобин."
+    - "Subject:\nRode NT-USB Mini\n\nMessage:\nCould you please offer comprehensive guidance on integrating the Rode NT-USB Mini with the SaaS platform? I require detailed, step-by-step instructions."
+    - "Subject:\nRückerstattung mehrerer Produkte aufgrund Kompatibilitätsprobleme\n\nMessage:\nEs wird eine Anfrage zur Rückerstattung mehrerer Software- und Hardwareprodukte wegen Kompatibilitätsproblemen gestellt."

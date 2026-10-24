@@ -1,0 +1,47 @@
+# Продолжение пайплайна ДЗ 3-5:
+#   split (ДЗ 3, импорт data/split/*.jsonl.dvc) -> tokenize -> sweep (MLflow)
+#                                              \-> eval_data -> evaluate (MLflow)
+# Sweep и оценка не стадии DVC: их результаты и версии входов живут в MLflow,
+# а повторный dvc repro не должен незаметно переобучать шесть кандидатов.
+stages:
+  tokenize:
+    cmd: python -m prep.tokenize
+    deps:
+      - data/split/train.jsonl
+      - data/split/val.jsonl
+      - prep/tokenize.py
+      - prep/prompt.py
+      - src/common.py
+      - src/data.py
+    params:
+      - model.name
+      - model.revision
+      - model.enable_thinking
+      - tokenize
+      - data.split_train
+      - data.split_val
+      - data.train
+      - data.val
+    outs:
+      - data/tokenized
+    metrics:
+      - metrics/tokenize.json:
+          cache: false
+
+  eval_data:
+    cmd: python -m prep.eval_data
+    deps:
+      - data/split/train.jsonl
+      - data/split/test.jsonl
+      - prep/eval_data.py
+      - prep/golden.yaml
+      - prep/behavioral.yaml
+      - src/common.py
+    params:
+      - data.split_train
+      - data.split_test
+    outs:
+      - data/eval
+    metrics:
+      - metrics/eval_data.json:
+          cache: false

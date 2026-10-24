@@ -1,0 +1,92 @@
+schema: '2.0'
+stages:
+  tokenize:
+    cmd: python -m prep.tokenize
+    deps:
+    - path: data/split/train.jsonl
+      hash: md5
+      md5: c93337791c93106a3d8be91df744a807
+      size: 41596222
+    - path: data/split/val.jsonl
+      hash: md5
+      md5: 7f709dd22f39bec40c88f4500d065460
+      size: 5279847
+    - path: prep/prompt.py
+      hash: md5
+      md5: fa754b8c684b7a0b03967550d20ba7b5
+      size: 4798
+    - path: prep/tokenize.py
+      hash: md5
+      md5: 02dc28b33707d6e019212a5d25f1f57e
+      size: 5313
+    - path: src/common.py
+      hash: md5
+      md5: 4fcf4229971c4e47a010ae61782d5cb1
+      size: 1511
+    - path: src/data.py
+      hash: md5
+      md5: 6c46f3f1fb30184ffee05c3da654874c
+      size: 1984
+    params:
+      params.yaml:
+        data.split_train: data/split/train.jsonl
+        data.split_val: data/split/val.jsonl
+        data.train: data/tokenized/train.pt
+        data.val: data/tokenized/val.pt
+        model.enable_thinking: false
+        model.name: Qwen/Qwen3-0.6B
+        model.revision: main
+        tokenize:
+          max_seq_len: 512
+          padding_side: left
+    outs:
+    - path: data/tokenized
+      hash: md5
+      md5: a5a534c248056da30d9da2808dde6af0.dir
+      size: 85725366
+      nfiles: 3
+    - path: metrics/tokenize.json
+      hash: md5
+      md5: d61edd52c2c5b06bdc73651e3150f4cb
+      size: 1006
+  eval_data:
+    cmd: python -m prep.eval_data
+    deps:
+    - path: data/split/test.jsonl
+      hash: md5
+      md5: 549c369bdb3071ef665ee173da0c50d5
+      size: 5403460
+    - path: data/split/train.jsonl
+      hash: md5
+      md5: c93337791c93106a3d8be91df744a807
+      size: 41596222
+    - path: prep/behavioral.yaml
+      hash: md5
+      md5: 5d5575fc9e23650813563cf58b4ff40f
+      size: 1887
+    - path: prep/eval_data.py
+      hash: md5
+      md5: 0ad1a901b213203ae7a857c83b52011e
+      size: 4645
+    - path: prep/golden.yaml
+      hash: md5
+      md5: 4cf7497c000ecb690d3f2341c598f822
+      size: 7175
+    - path: src/common.py
+      hash: md5
+      md5: 4fcf4229971c4e47a010ae61782d5cb1
+      size: 1511
+    params:
+      params.yaml:
+        data.split_test: data/split/test.jsonl
+        data.split_train: data/split/train.jsonl
+    outs:
+    - path: data/eval
+      hash: md5
+      md5: 6159558d767e09990b8d8845d6606907.dir
+      size: 21943807
+      nfiles: 3
+    - path: metrics/eval_data.json
+      hash: md5
+      md5: 6a714b3154ed9fa42ad52d3a1b716d32
+      size: 565

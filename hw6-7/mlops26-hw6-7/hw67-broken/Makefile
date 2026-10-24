@@ -1,6 +1,11 @@
-.PHONY: install up down sweep promote predict check check-storage
+.PHONY: install data push up down sweep promote predict check check-storage
 install:
 	uv sync --frozen
+# Данные: импорт split ДЗ 3 -> tokenize (Qwen3-0.6B) -> набор проверки; см. dvc.yaml.
+data:
+	uv run dvc repro
+push:
+	uv run dvc push
 up:
 	docker compose -p mlops-hw6 up --build -d --wait
 down:
