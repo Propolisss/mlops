@@ -1,0 +1,13 @@
+# Исходный код hw67-broken (коммит e67c90d), отдельный MLflow на :5007 с исходным compose.yaml, max_steps 2
+
+1. дочерних runs-кандидатов: 1 ['all-candidates']
+   params r/lr/target_modules: 4 0.0001 q_proj,v_proj
+   tag candidate: all-r8-high
+   точек val_loss: 12 шаги: [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]
+   итоговые final_val_loss в run: 1.6573646710644006
+3. теги данных: {'data_train_sha256': None, 'data_val_sha256': None}
+   select: Число отдельных runs не совпадает с конфигурациями
+4. ratio run: 0.8072977086252685
+   promote с порогом 0.0 зарегистрировал версию 1 alias: {'test': '1'} tag validation: passed
+2. compose без volume: после --force-recreate в контейнере нет /mlartifacts (ls: No such file or directory)
+   API request to http://127.0.0.1:5007/api/2.0/mlflow-artifacts/artifacts/1/9f5946625d7740ba8ef45c30081fb6b9/artifacts/persistence/probe.txt failed with exception HTTPConnectionPool(host='127.0.0.1', port=5007): Max ret

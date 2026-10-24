@@ -1,0 +1,4 @@
+{
+  "passed": false,
+  "reason": "Регрессия относительно baseline: accuracy: 0.2157 < 0.2549; срез lang_de: 0.2000 < 0.4500"
+}

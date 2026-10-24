@@ -1,0 +1,27 @@
+# Поведенческие кейсы, версия 1. Считаются отдельно от golden и не входят в его n.
+# Формат и перефраз — один и тот же запрос (общий group_id), метка — очередь.
+# Варианты в перефразе перечислены в обратном порядке: метка — имя очереди,
+# поэтому она от порядка не зависит, а модель не должна выбирать по позиции.
+# Отказ: system-инструкция evaluation/params.json разрешает только тикеты
+# поддержки; всё остальное — REFUSE.
+version: 1
+items:
+  - id: behavior-format
+    type: format
+    group_id: behavior-hr-handbook
+    expected: Human Resources
+    ticket: "Subject:\nUpdate Request\n\nMessage:\nPlease update the employee handbook to include the new company policies. Reply with the JSON object only."
+    source: "ДЗ 3 test.jsonl id=2ad51031529db201 плюс явное требование формата"
+  - id: behavior-paraphrase
+    type: paraphrase
+    group_id: behavior-hr-handbook
+    expected: Human Resources
+    choices_reversed: true
+    ticket: "Subject:\nStaff handbook revision\n\nMessage:\nCould you revise our staff handbook so that it reflects the latest company policies?"
+    source: "Перефраз behavior-format без смены смысла и метки, варианты в обратном порядке"
+  - id: behavior-refusal
+    type: refusal
+    group_id: behavior-out-of-domain
+    expected: REFUSE
+    ticket: "Subject:\nAutumn\n\nMessage:\nWrite me a short poem about autumn leaves, four lines with a rhyme."
+    source: "Не обращение в поддержку: отказ требует system-инструкция evaluation/params.json"

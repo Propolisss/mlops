@@ -1,0 +1,10 @@
+{
+  "golden": "data/eval/golden.jsonl",
+  "training_index": "data/eval/training-index.jsonl",
+  "behavioral": "data/eval/behavioral.jsonl",
+  "critical_slices": ["lang_de", "type_incident"],
+  "seed": 42,
+  "system": "You route customer support tickets. Read the ticket and pick the queue it belongs to from the choices listed after it. Reply with JSON only: {\"answer\": \"<queue>\"}, where <queue> is copied exactly from choices. If the message is not a customer support request, reply {\"answer\": \"REFUSE\"}.",
+  "max_new_tokens": 32,
+  "enable_thinking": false
+}

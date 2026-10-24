@@ -1,0 +1,326 @@
+[
+  {
+    "id": "golden-6efd196d38d24ca3",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.259116625005845
+  },
+  {
+    "id": "golden-26ea659c3756a5a0",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.24971345800440758
+  },
+  {
+    "id": "golden-54d7a0b0b56b22fe",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.2641198750352487
+  },
+  {
+    "id": "golden-0c711f73638adf72",
+    "raw": "{\"answer\": \"Sales and Pre-Sales\"}",
+    "error": null,
+    "latency_seconds": 0.298282083007507
+  },
+  {
+    "id": "golden-c3f6b399fccb1195",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24074137496063486
+  },
+  {
+    "id": "golden-ef012856e73cd36d",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25080370798241347
+  },
+  {
+    "id": "golden-98db16e002baf8ad",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.2501012499560602
+  },
+  {
+    "id": "golden-43f6951f21a44b0a",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2709179579978809
+  },
+  {
+    "id": "golden-18f054014c0799aa",
+    "raw": "{\"answer\": \"Returns and Exchanges\"}",
+    "error": null,
+    "latency_seconds": 0.29306608298793435
+  },
+  {
+    "id": "golden-6a36cb78dd86565a",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.23867300001438707
+  },
+  {
+    "id": "golden-f6a27ab05b86bd05",
+    "raw": "{\"answer\": \"Returns and Exchanges\"}",
+    "error": null,
+    "latency_seconds": 0.2955742499907501
+  },
+  {
+    "id": "golden-6131d97868f0ab09",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.23065033298917115
+  },
+  {
+    "id": "golden-cedb23a6cce3cb9e",
+    "raw": "{\"answer\": \"Sales and Pre-Sales\"}",
+    "error": null,
+    "latency_seconds": 0.2942461660131812
+  },
+  {
+    "id": "golden-916e70f46ac6c436",
+    "raw": "{\"answer\": \"Sales and Pre-Sales\"}",
+    "error": null,
+    "latency_seconds": 0.306991207995452
+  },
+  {
+    "id": "golden-6abffce19bd7bc26",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2480833749868907
+  },
+  {
+    "id": "golden-c7c80d899f808e6e",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.23972837498877198
+  },
+  {
+    "id": "golden-c58be1c5ccd297ce",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.254367874993477
+  },
+  {
+    "id": "golden-254fcae82c19aec8",
+    "raw": "{\"answer\": \"Technical Support\"}",
+    "error": null,
+    "latency_seconds": 0.2673847920377739
+  },
+  {
+    "id": "golden-2ad51031529db201",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.23156391695374623
+  },
+  {
+    "id": "golden-8a6d51353d07be56",
+    "raw": "{\"answer\": \"REFUSE\"}",
+    "error": null,
+    "latency_seconds": 0.25420866697095335
+  },
+  {
+    "id": "golden-afadc014fca78f4f",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24108016700483859
+  },
+  {
+    "id": "golden-5c8a7eb3f1763215",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2514096249942668
+  },
+  {
+    "id": "golden-d8d1fed10cfe1d73",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2611350829829462
+  },
+  {
+    "id": "golden-ff7723ab4d038622",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2556288330233656
+  },
+  {
+    "id": "golden-9fb0ed977dfbb9b4",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24848024995299056
+  },
+  {
+    "id": "golden-230dd5c0e7cbb189",
+    "raw": "{\"answer\": \"Service Outages and Maintenance\"}",
+    "error": null,
+    "latency_seconds": 0.3369307499960996
+  },
+  {
+    "id": "golden-059a883d363edbcf",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24767687497660518
+  },
+  {
+    "id": "golden-bd210b675353afae",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25197804102208465
+  },
+  {
+    "id": "golden-0067ae0f8b2b5042",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24991099996259436
+  },
+  {
+    "id": "golden-568ad3678b98439a",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25743729196256027
+  },
+  {
+    "id": "golden-5fbd8d9838acecfd",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25666854198789224
+  },
+  {
+    "id": "golden-109f9c36c6327d3b",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24623504100600258
+  },
+  {
+    "id": "golden-662d15b1bfb8a2e3",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25190545798977837
+  },
+  {
+    "id": "golden-8ec6f4b1ee4739cd",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2491587910335511
+  },
+  {
+    "id": "golden-ce889b32bb0fbc9f",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24222433398244902
+  },
+  {
+    "id": "golden-6fa65133b3db76e0",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24132737499894574
+  },
+  {
+    "id": "golden-ccf2220f510b6842",
+    "raw": "{\"answer\": \"Technical Support\"}",
+    "error": null,
+    "latency_seconds": 0.25475724996067584
+  },
+  {
+    "id": "golden-5e11b62fc8f3258d",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2578388339607045
+  },
+  {
+    "id": "golden-7d5c95d65732552b",
+    "raw": "{\"answer\": \"Technical Support\"}",
+    "error": null,
+    "latency_seconds": 0.26339045900385827
+  },
+  {
+    "id": "golden-d4b0dcf5b1dca5f9",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25001729105133563
+  },
+  {
+    "id": "golden-c2fe7e25aba2477a",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.25936450000153854
+  },
+  {
+    "id": "golden-fa6315cc4b8398b4",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.24170620803488418
+  },
+  {
+    "id": "golden-4577c354e8d04d1a",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2564384159632027
+  },
+  {
+    "id": "golden-c81d6d4bc6a15d94",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.249692041950766
+  },
+  {
+    "id": "golden-0bc274d008764b19",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2484342500101775
+  },
+  {
+    "id": "golden-75865a9062bbbe94",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.23605674999998882
+  },
+  {
+    "id": "golden-64432fded2c03ec4",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.2541464170208201
+  },
+  {
+    "id": "golden-460fc9e5a0b83118",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.25807199999690056
+  },
+  {
+    "id": "golden-c0a54eb66be048cc",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.24659875000361353
+  },
+  {
+    "id": "golden-9f597cb76d106cdb",
+    "raw": "{\"answer\": \"IT Support\"}",
+    "error": null,
+    "latency_seconds": 0.26447200000984594
+  },
+  {
+    "id": "golden-4fde064aa4ada9b0",
+    "raw": "{\"answer\": \"Product Support\"}",
+    "error": null,
+    "latency_seconds": 0.23962750000646338
+  },
+  {
+    "id": "behavior-format",
+    "raw": "{\"answer\": \"REFUSE\"}",
+    "error": null,
+    "latency_seconds": 0.23807224998017773
+  },
+  {
+    "id": "behavior-paraphrase",
+    "raw": "{\"answer\": \"REFUSE\"}",
+    "error": null,
+    "latency_seconds": 0.2361735829617828
+  },
+  {
+    "id": "behavior-refusal",
+    "raw": "{\"answer\": \"Service Outages and Maintenance\"}",
+    "error": null,
+    "latency_seconds": 0.30463629198493436
+  }
+]

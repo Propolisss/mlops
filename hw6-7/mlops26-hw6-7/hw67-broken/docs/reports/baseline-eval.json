@@ -1,0 +1,813 @@
+{
+  "overall": {
+    "n": 51,
+    "correct": 13,
+    "valid": 51,
+    "errors": 0,
+    "accuracy": 0.2549019607843137,
+    "format_rate": 1.0
+  },
+  "slices": {
+    "lang_de": {
+      "n": 20,
+      "correct": 9,
+      "valid": 20,
+      "errors": 0,
+      "accuracy": 0.45,
+      "format_rate": 1.0
+    },
+    "lang_en": {
+      "n": 31,
+      "correct": 4,
+      "valid": 31,
+      "errors": 0,
+      "accuracy": 0.12903225806451613,
+      "format_rate": 1.0
+    },
+    "len_long": {
+      "n": 28,
+      "correct": 7,
+      "valid": 28,
+      "errors": 0,
+      "accuracy": 0.25,
+      "format_rate": 1.0
+    },
+    "len_short": {
+      "n": 23,
+      "correct": 6,
+      "valid": 23,
+      "errors": 0,
+      "accuracy": 0.2608695652173913,
+      "format_rate": 1.0
+    },
+    "type_change": {
+      "n": 8,
+      "correct": 2,
+      "valid": 8,
+      "errors": 0,
+      "accuracy": 0.25,
+      "format_rate": 1.0
+    },
+    "type_incident": {
+      "n": 18,
+      "correct": 2,
+      "valid": 18,
+      "errors": 0,
+      "accuracy": 0.1111111111111111,
+      "format_rate": 1.0
+    },
+    "type_problem": {
+      "n": 7,
+      "correct": 3,
+      "valid": 7,
+      "errors": 0,
+      "accuracy": 0.42857142857142855,
+      "format_rate": 1.0
+    },
+    "type_request": {
+      "n": 18,
+      "correct": 6,
+      "valid": 18,
+      "errors": 0,
+      "accuracy": 0.3333333333333333,
+      "format_rate": 1.0
+    }
+  },
+  "per_item": [
+    {
+      "id": "golden-6efd196d38d24ca3",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-26ea659c3756a5a0",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-54d7a0b0b56b22fe",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_change",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-0c711f73638adf72",
+      "raw": "{\"answer\": \"Billing and Payments\"}",
+      "parsed": "Billing and Payments",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-c3f6b399fccb1195",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_change",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-ef012856e73cd36d",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-98db16e002baf8ad",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-43f6951f21a44b0a",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_change",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-18f054014c0799aa",
+      "raw": "{\"answer\": \"Returns and Exchanges\"}",
+      "parsed": "Returns and Exchanges",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-6a36cb78dd86565a",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-f6a27ab05b86bd05",
+      "raw": "{\"answer\": \"Returns and Exchanges\"}",
+      "parsed": "Returns and Exchanges",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_problem",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-6131d97868f0ab09",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_change",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-cedb23a6cce3cb9e",
+      "raw": "{\"answer\": \"Sales and Pre-Sales\"}",
+      "parsed": "Sales and Pre-Sales",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-916e70f46ac6c436",
+      "raw": "{\"answer\": \"Sales and Pre-Sales\"}",
+      "parsed": "Sales and Pre-Sales",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-6abffce19bd7bc26",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-c7c80d899f808e6e",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-c58be1c5ccd297ce",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_problem",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-254fcae82c19aec8",
+      "raw": "{\"answer\": \"Human Resources\"}",
+      "parsed": "Human Resources",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-2ad51031529db201",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_change",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-8a6d51353d07be56",
+      "raw": "{\"answer\": \"REFUSE\"}",
+      "parsed": "REFUSE",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-afadc014fca78f4f",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-5c8a7eb3f1763215",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-d8d1fed10cfe1d73",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-ff7723ab4d038622",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-9fb0ed977dfbb9b4",
+      "raw": "{\"answer\": \"Service Outages and Maintenance\"}",
+      "parsed": "Service Outages and Maintenance",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_change",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-230dd5c0e7cbb189",
+      "raw": "{\"answer\": \"Service Outages and Maintenance\"}",
+      "parsed": "Service Outages and Maintenance",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-059a883d363edbcf",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-bd210b675353afae",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_change",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-0067ae0f8b2b5042",
+      "raw": "{\"answer\": \"Service Outages and Maintenance\"}",
+      "parsed": "Service Outages and Maintenance",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_change",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-568ad3678b98439a",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-5fbd8d9838acecfd",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-109f9c36c6327d3b",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_problem",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-662d15b1bfb8a2e3",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_problem",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-8ec6f4b1ee4739cd",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-ce889b32bb0fbc9f",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-6fa65133b3db76e0",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-ccf2220f510b6842",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-5e11b62fc8f3258d",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-7d5c95d65732552b",
+      "raw": "{\"answer\": \"Technical Support\"}",
+      "parsed": "Technical Support",
+      "valid": true,
+      "correct": true,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-d4b0dcf5b1dca5f9",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_problem",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-c2fe7e25aba2477a",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_problem",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-fa6315cc4b8398b4",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_incident",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-4577c354e8d04d1a",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-c81d6d4bc6a15d94",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_incident",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-0bc274d008764b19",
+      "raw": "{\"answer\": \"Service Outages and Maintenance\"}",
+      "parsed": "Service Outages and Maintenance",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_problem",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-75865a9062bbbe94",
+      "raw": "{\"answer\": \"REFUSE\"}",
+      "parsed": "REFUSE",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_de",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-64432fded2c03ec4",
+      "raw": "{\"answer\": \"IT Support\"}",
+      "parsed": "IT Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-460fc9e5a0b83118",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-c0a54eb66be048cc",
+      "raw": "{\"answer\": \"REFUSE\"}",
+      "parsed": "REFUSE",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_short"
+      ]
+    },
+    {
+      "id": "golden-9f597cb76d106cdb",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_long"
+      ]
+    },
+    {
+      "id": "golden-4fde064aa4ada9b0",
+      "raw": "{\"answer\": \"Product Support\"}",
+      "parsed": "Product Support",
+      "valid": true,
+      "correct": false,
+      "error": null,
+      "slices": [
+        "lang_en",
+        "type_request",
+        "len_short"
+      ]
+    }
+  ],
+  "status": "complete",
+  "model": {
+    "kind": "base",
+    "name": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca"
+  },
+  "protocol_sha256": "ec43e359870d9fff7b631594771fc532a85f95006095aee6fbb627677ff0398d",
+  "golden_sha256": "daa8bc4ebb710b560a67313ca2d28694f5d641c268563953172638d140b5b19a",
+  "baseline_spec_sha256": "f71269b95f6b4e1e160fa25e9af6c973517cfebad15880b75b56c8184680b163",
+  "behavioral": {
+    "overall": {
+      "n": 3,
+      "correct": 0,
+      "valid": 3,
+      "errors": 0,
+      "accuracy": 0.0,
+      "format_rate": 1.0
+    },
+    "slices": {
+      "behavior": {
+        "n": 3,
+        "correct": 0,
+        "valid": 3,
+        "errors": 0,
+        "accuracy": 0.0,
+        "format_rate": 1.0
+      }
+    },
+    "per_item": [
+      {
+        "id": "behavior-format",
+        "raw": "{\"answer\": \"Product Support\"}",
+        "parsed": "Product Support",
+        "valid": true,
+        "correct": false,
+        "error": null,
+        "slices": [
+          "behavior"
+        ]
+      },
+      {
+        "id": "behavior-paraphrase",
+        "raw": "{\"answer\": \"REFUSE\"}",
+        "parsed": "REFUSE",
+        "valid": true,
+        "correct": false,
+        "error": null,
+        "slices": [
+          "behavior"
+        ]
+      },
+      {
+        "id": "behavior-refusal",
+        "raw": "{\"answer\": \"Product Support\"}",
+        "parsed": "Product Support",
+        "valid": true,
+        "correct": false,
+        "error": null,
+        "slices": [
+          "behavior"
+        ]
+      }
+    ]
+  },
+  "leakage": {
+    "exact_or_group_intersections": 0,
+    "n_train_index": 28879,
+    "n_golden": 51,
+    "n_behavioral": 3
+  },
+  "outputs_sha256": "1a2c0353453433d2e926cb4343609463cb27f84bc14299f6dea6e5685ec0f00c",
+  "evaluation_run_id": "917823a359d64f64b365ca20dd86dd29"
+}

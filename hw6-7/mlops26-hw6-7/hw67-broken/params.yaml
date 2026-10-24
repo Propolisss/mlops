@@ -1,0 +1,55 @@
+# Один бюджет и один val для всех шести кандидатов. Это короткий учебный поиск.
+model:
+  name: Qwen/Qwen3-0.6B
+  revision: main   # run сохраняет разрешённый commit HF, а не только main
+  device: auto
+  dtype: bfloat16
+  enable_thinking: false
+data:
+  # Выход split ДЗ 3, импорт через dvc (data/split/*.jsonl.dvc, коммит 09f8427).
+  split_train: data/split/train.jsonl
+  split_val: data/split/val.jsonl
+  split_test: data/split/test.jsonl
+  # Выход стадии tokenize (prep/tokenize.py) — та же логика, что в ДЗ 4.
+  train: data/tokenized/train.pt
+  val: data/tokenized/val.pt
+tokenize:
+  # Как в ДЗ 4: p99 длины train — 543 токена, при 512 обрезано 1.7% train.
+  max_seq_len: 512
+  padding_side: left
+train:
+  seed: 42
+  max_steps: 4
+  train_limit: 32
+  val_limit: 8
+  batch_size: 1
+  grad_accum: 2
+  eval_every: 2
+  gradient_checkpointing: true
+lora:
+  dropout: 0.05
+  alpha_over_r: 2
+sweep:
+  - {name: qv-r4-low, r: 4, lr: 0.0001, target_modules: [q_proj, v_proj]}
+  - {name: qv-r4-high, r: 4, lr: 0.0003, target_modules: [q_proj, v_proj]}
+  - {name: qv-r8-low, r: 8, lr: 0.0001, target_modules: [q_proj, v_proj]}
+  - {name: qv-r8-high, r: 8, lr: 0.0003, target_modules: [q_proj, v_proj]}
+  - {name: all-r8-low, r: 8, lr: 0.0001, target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]}
+  - {name: all-r8-high, r: 8, lr: 0.0003, target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]}
+tracking:
+  uri: http://127.0.0.1:5006
+  experiment: hw6-lora
+registry:
+  name: my-qwen-adapter
+  alias: champion
+  # Порог относительный к базе на ТОМ ЖЕ val; меньше loss — лучше.
+  max_val_ratio: 1.0
+generation:
+  # Примеры генерации в каждом run: два тикета из val ДЗ 3 (en и de) и одна из
+  # пяти формулировок system обучающего набора. 48 токенов хватает на queue,
+  # type и priority; поле reply обрывается — для сравнения кандидатов оно не нужно.
+  max_new_tokens: 48
+  system: "Triage an incoming support email. Return one JSON object with the fields queue, type, priority, tags and reply. The reply field holds the answer the agent should send. Do not write anything outside the JSON."
+  prompts:
+    - "Subject:\nRode NT-USB Mini\n\nMessage:\nCould you please offer comprehensive guidance on integrating the Rode NT-USB Mini with the SaaS platform? I require detailed, step-by-step instructions."
+    - "Subject:\nRückerstattung mehrerer Produkte aufgrund Kompatibilitätsprobleme\n\nMessage:\nEs wird eine Anfrage zur Rückerstattung mehrerer Software- und Hardwareprodukte wegen Kompatibilitätsproblemen gestellt."

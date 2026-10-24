@@ -1,0 +1,5 @@
+# Состав пулов train_limit=32 и val_limit=8 (seed 42): срез по порядку против случайной выборки
+train по порядку (было): тем 1, очередей 1, языки {'en': 32}, очереди {'Returns and Exchanges': 32}
+train случайно (стало): тем 20, очередей 7, языки {'en': 23, 'de': 9}, очереди {'Billing and Payments': 8, 'Service Outages and Maintenance': 2, 'Technical Support': 8, 'Product Support': 5, 'Customer Service': 6, 'IT Support': 2, 'Returns and Exchanges': 1}
+val по порядку (было): тем 1, очередей 1, языки {'en': 8}, очереди {'Technical Support': 8}
+val случайно (стало): тем 8, очередей 6, языки {'de': 3, 'en': 5}, очереди {'Technical Support': 3, 'Customer Service': 1, 'Sales and Pre-Sales': 1, 'IT Support': 1, 'Product Support': 1, 'Service Outages and Maintenance': 1}

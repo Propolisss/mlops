@@ -1,0 +1,38 @@
+{
+  "model": "Qwen/Qwen3-0.6B",
+  "max_seq_len": 512,
+  "splits": {
+    "train": {
+      "rows": 28879,
+      "examples": 28878,
+      "truncated": 478,
+      "dropped_no_supervision": 1,
+      "tokens": 8119427,
+      "supervised_tokens": 3670761,
+      "compare_with_hw4": {
+        "old": "../../../hw4/mlops26-hw4/hw4-broken/data/tokenized/train.pt",
+        "old_model": "Qwen/Qwen3-1.7B",
+        "new_model": "Qwen/Qwen3-0.6B",
+        "examples": 28878,
+        "identical": true,
+        "pad_token_id_equal": true
+      }
+    },
+    "val": {
+      "rows": 3610,
+      "examples": 3610,
+      "truncated": 75,
+      "dropped_no_supervision": 0,
+      "tokens": 1039476,
+      "supervised_tokens": 471673,
+      "compare_with_hw4": {
+        "old": "../../../hw4/mlops26-hw4/hw4-broken/data/tokenized/val.pt",
+        "old_model": "Qwen/Qwen3-1.7B",
+        "new_model": "Qwen/Qwen3-0.6B",
+        "examples": 3610,
+        "identical": true,
+        "pad_token_id_equal": true
+      }
+    }
+  }
+}
