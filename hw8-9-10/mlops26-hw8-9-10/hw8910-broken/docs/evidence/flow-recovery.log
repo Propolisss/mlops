@@ -1,0 +1,14 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python flow.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc
+21:54:17.537 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8678
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+21:54:19.206 | INFO    | Flow run 'benevolent-python' - Beginning flow run 'benevolent-python' for flow 'model-release'
+21:54:19.214 | INFO    | Task run 'prepare_input-c86' - Finished in state Cached(type=COMPLETED)
+21:54:19.215 | INFO    | Task run 'acquire_artifact-171' - READ_EXISTING_ARTIFACT fixture-B; no training
+21:54:19.216 | INFO    | Task run 'acquire_artifact-171' - Finished in state Completed()
+21:54:19.218 | INFO    | Task run 'evaluate_admission-13a' - Finished in state Completed()
+21:54:19.223 | INFO    | Task run 'publish_version-aeb' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+21:54:19.225 | INFO    | Task run 'publish_version-aeb' - Finished in state Completed()
+21:54:20.217 | INFO    | Flow run 'benevolent-python' - Finished in state Completed()
+21:54:20.226 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8678
+
+EXIT_CODE=0

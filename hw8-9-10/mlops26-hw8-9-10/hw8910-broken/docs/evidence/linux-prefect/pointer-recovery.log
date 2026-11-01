@@ -1,0 +1,14 @@
+$ /opt/test-venv/bin/python flow.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180-crash
+18:53:39.279 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8141
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+18:53:42.031 | INFO    | Flow run 'monumental-bettong' - Beginning flow run 'monumental-bettong' for flow 'model-release'
+18:53:42.059 | INFO    | Task run 'prepare_input-a85' - Finished in state Cached(type=COMPLETED)
+18:53:42.061 | INFO    | Task run 'acquire_artifact-222' - READ_EXISTING_ARTIFACT fixture-B; no training
+18:53:42.062 | INFO    | Task run 'acquire_artifact-222' - Finished in state Completed()
+18:53:42.065 | INFO    | Task run 'evaluate_admission-cf8' - Finished in state Completed()
+18:53:42.071 | INFO    | Task run 'publish_version-014' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+18:53:42.072 | INFO    | Task run 'publish_version-014' - Finished in state Completed()
+18:53:43.059 | INFO    | Flow run 'monumental-bettong' - Finished in state Completed()
+18:53:43.076 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8141
+
+EXIT_CODE=0

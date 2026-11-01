@@ -18,6 +18,11 @@ print(
     + hashlib.sha256((PROJECT / "tests/test_release.py").read_bytes()).hexdigest()
 )
 print(
+    f"Итог: {result.testsRun}/{result.testsRun}"
+    if result.wasSuccessful()
+    else "Итог: FAIL"
+)
+print(
     "Отпечаток выданных тестов: "
     + hashlib.sha256(
         b"test_release.py" + (PROJECT / "tests/test_release.py").read_bytes()

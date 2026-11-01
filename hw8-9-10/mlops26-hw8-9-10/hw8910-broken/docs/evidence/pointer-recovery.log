@@ -1,0 +1,14 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python flow.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc-crash
+21:54:37.775 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8583
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+21:54:39.212 | INFO    | Flow run 'international-finch' - Beginning flow run 'international-finch' for flow 'model-release'
+21:54:39.219 | INFO    | Task run 'prepare_input-aa0' - Finished in state Cached(type=COMPLETED)
+21:54:39.220 | INFO    | Task run 'acquire_artifact-ea1' - READ_EXISTING_ARTIFACT fixture-B; no training
+21:54:39.220 | INFO    | Task run 'acquire_artifact-ea1' - Finished in state Completed()
+21:54:39.222 | INFO    | Task run 'evaluate_admission-a93' - Finished in state Completed()
+21:54:39.224 | INFO    | Task run 'publish_version-ce0' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+21:54:39.225 | INFO    | Task run 'publish_version-ce0' - Finished in state Completed()
+21:54:40.222 | INFO    | Flow run 'international-finch' - Finished in state Completed()
+21:54:40.237 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8583
+
+EXIT_CODE=0

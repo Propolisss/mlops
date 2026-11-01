@@ -1,0 +1,15 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python flow.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc
+21:54:21.855 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8319
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+21:54:23.394 | INFO    | Flow run 'hairy-mule' - Beginning flow run 'hairy-mule' for flow 'model-release'
+21:54:23.402 | INFO    | Task run 'prepare_input-6d9' - PREPARED 40daa38c4b0e249e64c596a7ec8943b0ee4749c1e322412b07de4785201d05a6 rows=1
+21:54:23.403 | INFO    | Task run 'prepare_input-6d9' - Finished in state Completed()
+21:54:23.404 | INFO    | Task run 'acquire_artifact-950' - READ_EXISTING_ARTIFACT fixture-B; no training
+21:54:23.405 | INFO    | Task run 'acquire_artifact-950' - Finished in state Completed()
+21:54:23.406 | INFO    | Task run 'evaluate_admission-208' - Finished in state Completed()
+21:54:23.408 | INFO    | Task run 'publish_version-4f7' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+21:54:23.410 | INFO    | Task run 'publish_version-4f7' - Finished in state Completed()
+21:54:24.403 | INFO    | Flow run 'hairy-mule' - Finished in state Completed()
+21:54:24.414 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8319
+
+EXIT_CODE=0

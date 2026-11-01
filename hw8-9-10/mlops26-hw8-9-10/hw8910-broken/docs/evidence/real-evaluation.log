@@ -1,0 +1,110 @@
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 24073.17it/s]
+baseline 1/54 {"answer": "IT Support"}
+baseline 2/54 {"answer": "Product Support"}
+baseline 3/54 {"answer": "Product Support"}
+baseline 4/54 {"answer": "Billing and Payments"}
+baseline 5/54 {"answer": "IT Support"}
+baseline 6/54 {"answer": "IT Support"}
+baseline 7/54 {"answer": "Product Support"}
+baseline 8/54 {"answer": "IT Support"}
+baseline 9/54 {"answer": "Returns and Exchanges"}
+baseline 10/54 {"answer": "Product Support"}
+baseline 11/54 {"answer": "Returns and Exchanges"}
+baseline 12/54 {"answer": "Product Support"}
+baseline 13/54 {"answer": "Sales and Pre-Sales"}
+baseline 14/54 {"answer": "Sales and Pre-Sales"}
+baseline 15/54 {"answer": "IT Support"}
+baseline 16/54 {"answer": "IT Support"}
+baseline 17/54 {"answer": "Product Support"}
+baseline 18/54 {"answer": "Human Resources"}
+baseline 19/54 {"answer": "Product Support"}
+baseline 20/54 {"answer": "REFUSE"}
+baseline 21/54 {"answer": "IT Support"}
+baseline 22/54 {"answer": "IT Support"}
+baseline 23/54 {"answer": "IT Support"}
+baseline 24/54 {"answer": "IT Support"}
+baseline 25/54 {"answer": "Service Outages and Maintenance"}
+baseline 26/54 {"answer": "Service Outages and Maintenance"}
+baseline 27/54 {"answer": "IT Support"}
+baseline 28/54 {"answer": "IT Support"}
+baseline 29/54 {"answer": "Service Outages and Maintenance"}
+baseline 30/54 {"answer": "IT Support"}
+baseline 31/54 {"answer": "IT Support"}
+baseline 32/54 {"answer": "IT Support"}
+baseline 33/54 {"answer": "IT Support"}
+baseline 34/54 {"answer": "IT Support"}
+baseline 35/54 {"answer": "IT Support"}
+baseline 36/54 {"answer": "IT Support"}
+baseline 37/54 {"answer": "IT Support"}
+baseline 38/54 {"answer": "IT Support"}
+baseline 39/54 {"answer": "Technical Support"}
+baseline 40/54 {"answer": "IT Support"}
+baseline 41/54 {"answer": "IT Support"}
+baseline 42/54 {"answer": "IT Support"}
+baseline 43/54 {"answer": "IT Support"}
+baseline 44/54 {"answer": "IT Support"}
+baseline 45/54 {"answer": "Service Outages and Maintenance"}
+baseline 46/54 {"answer": "REFUSE"}
+baseline 47/54 {"answer": "IT Support"}
+baseline 48/54 {"answer": "Product Support"}
+baseline 49/54 {"answer": "REFUSE"}
+baseline 50/54 {"answer": "Product Support"}
+baseline 51/54 {"answer": "Product Support"}
+baseline 52/54 {"answer": "Product Support"}
+baseline 53/54 {"answer": "REFUSE"}
+baseline 54/54 {"answer": "Product Support"}
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 19614.88it/s]
+candidate 1/54 {"answer": "IT Support"}
+candidate 2/54 {"answer": "Product Support"}
+candidate 3/54 {"answer": "Product Support"}
+candidate 4/54 {"answer": "Sales and Pre-Sales"}
+candidate 5/54 {"answer": "IT Support"}
+candidate 6/54 {"answer": "IT Support"}
+candidate 7/54 {"answer": "Product Support"}
+candidate 8/54 {"answer": "IT Support"}
+candidate 9/54 {"answer": "Returns and Exchanges"}
+candidate 10/54 {"answer": "Product Support"}
+candidate 11/54 {"answer": "Returns and Exchanges"}
+candidate 12/54 {"answer": "Product Support"}
+candidate 13/54 {"answer": "Sales and Pre-Sales"}
+candidate 14/54 {"answer": "Sales and Pre-Sales"}
+candidate 15/54 {"answer": "IT Support"}
+candidate 16/54 {"answer": "IT Support"}
+candidate 17/54 {"answer": "Product Support"}
+candidate 18/54 {"answer": "Technical Support"}
+candidate 19/54 {"answer": "Product Support"}
+candidate 20/54 {"answer": "REFUSE"}
+candidate 21/54 {"answer": "IT Support"}
+candidate 22/54 {"answer": "IT Support"}
+candidate 23/54 {"answer": "IT Support"}
+candidate 24/54 {"answer": "IT Support"}
+candidate 25/54 {"answer": "IT Support"}
+candidate 26/54 {"answer": "Service Outages and Maintenance"}
+candidate 27/54 {"answer": "IT Support"}
+candidate 28/54 {"answer": "IT Support"}
+candidate 29/54 {"answer": "IT Support"}
+candidate 30/54 {"answer": "IT Support"}
+candidate 31/54 {"answer": "IT Support"}
+candidate 32/54 {"answer": "IT Support"}
+candidate 33/54 {"answer": "IT Support"}
+candidate 34/54 {"answer": "IT Support"}
+candidate 35/54 {"answer": "IT Support"}
+candidate 36/54 {"answer": "IT Support"}
+candidate 37/54 {"answer": "Technical Support"}
+candidate 38/54 {"answer": "IT Support"}
+candidate 39/54 {"answer": "Technical Support"}
+candidate 40/54 {"answer": "IT Support"}
+candidate 41/54 {"answer": "IT Support"}
+candidate 42/54 {"answer": "IT Support"}
+candidate 43/54 {"answer": "IT Support"}
+candidate 44/54 {"answer": "IT Support"}
+candidate 45/54 {"answer": "IT Support"}
+candidate 46/54 {"answer": "IT Support"}
+candidate 47/54 {"answer": "IT Support"}
+candidate 48/54 {"answer": "Product Support"}
+candidate 49/54 {"answer": "Product Support"}
+candidate 50/54 {"answer": "IT Support"}
+candidate 51/54 {"answer": "Product Support"}
+candidate 52/54 {"answer": "REFUSE"}
+candidate 53/54 {"answer": "REFUSE"}
+candidate 54/54 {"answer": "Service Outages and Maintenance"}

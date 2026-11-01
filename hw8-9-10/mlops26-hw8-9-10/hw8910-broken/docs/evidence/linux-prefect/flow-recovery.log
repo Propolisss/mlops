@@ -1,0 +1,14 @@
+$ /opt/test-venv/bin/python flow.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180
+18:53:08.387 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8845
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+18:53:11.062 | INFO    | Flow run 'magic-crab' - Beginning flow run 'magic-crab' for flow 'model-release'
+18:53:11.090 | INFO    | Task run 'prepare_input-00c' - Finished in state Cached(type=COMPLETED)
+18:53:11.092 | INFO    | Task run 'acquire_artifact-2f3' - READ_EXISTING_ARTIFACT fixture-B; no training
+18:53:11.093 | INFO    | Task run 'acquire_artifact-2f3' - Finished in state Completed()
+18:53:11.096 | INFO    | Task run 'evaluate_admission-173' - Finished in state Completed()
+18:53:11.101 | INFO    | Task run 'publish_version-773' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+18:53:11.103 | INFO    | Task run 'publish_version-773' - Finished in state Completed()
+18:53:12.087 | INFO    | Flow run 'magic-crab' - Finished in state Completed()
+18:53:12.114 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8845
+
+EXIT_CODE=0

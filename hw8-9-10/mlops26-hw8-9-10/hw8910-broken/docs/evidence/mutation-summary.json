@@ -1,0 +1,1 @@
+{"exit_code":1,"mutation":"Accept truthy passed without complete status in an isolated code copy","restored":true,"source_after_sha256":"10e23a4d055e953acd2cf07223b85bd96355dccfffdbb6270109ace9c8f45dc8","source_before_sha256":"10e23a4d055e953acd2cf07223b85bd96355dccfffdbb6270109ace9c8f45dc8","working_tree_was_not_modified":true}

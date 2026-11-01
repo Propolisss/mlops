@@ -1,0 +1,14 @@
+$ /opt/test-venv/bin/python flow.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180-crash
+18:53:45.500 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8949
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+18:53:48.250 | INFO    | Flow run 'lilac-bustard' - Beginning flow run 'lilac-bustard' for flow 'model-release'
+18:53:48.278 | INFO    | Task run 'prepare_input-7a0' - Finished in state Cached(type=COMPLETED)
+18:53:48.281 | INFO    | Task run 'acquire_artifact-daa' - READ_EXISTING_ARTIFACT fixture-B; no training
+18:53:48.282 | INFO    | Task run 'acquire_artifact-daa' - Finished in state Completed()
+18:53:48.284 | INFO    | Task run 'evaluate_admission-487' - Finished in state Completed()
+18:53:48.289 | INFO    | Task run 'publish_version-e2d' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+18:53:48.290 | INFO    | Task run 'publish_version-e2d' - Finished in state Completed()
+18:53:49.278 | INFO    | Flow run 'lilac-bustard' - Finished in state Completed()
+18:53:49.305 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8949
+
+EXIT_CODE=0
