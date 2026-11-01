@@ -1,0 +1,14 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python flow.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc-crash
+21:54:41.565 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8943
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+21:54:42.999 | INFO    | Flow run 'mottled-saiga' - Beginning flow run 'mottled-saiga' for flow 'model-release'
+21:54:43.005 | INFO    | Task run 'prepare_input-da2' - Finished in state Cached(type=COMPLETED)
+21:54:43.006 | INFO    | Task run 'acquire_artifact-c68' - READ_EXISTING_ARTIFACT fixture-B; no training
+21:54:43.007 | INFO    | Task run 'acquire_artifact-c68' - Finished in state Completed()
+21:54:43.008 | INFO    | Task run 'evaluate_admission-ef2' - Finished in state Completed()
+21:54:43.010 | INFO    | Task run 'publish_version-d18' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+21:54:43.010 | INFO    | Task run 'publish_version-d18' - Finished in state Completed()
+21:54:44.008 | INFO    | Flow run 'mottled-saiga' - Finished in state Completed()
+21:54:44.020 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8943
+
+EXIT_CODE=0

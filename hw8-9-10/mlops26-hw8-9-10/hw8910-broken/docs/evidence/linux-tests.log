@@ -1,0 +1,170 @@
+docker run --rm -v "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken:/project" -w /project -e UV_PROJECT_ENVIRONMENT=/opt/test-venv ghcr.io/astral-sh/uv:python3.12-bookworm-slim sh -c 'uv sync --frozen --no-dev && /opt/test-venv/bin/python tools/check.py'
+Using CPython 3.12.12 interpreter at: /usr/local/bin/python3.12
+Creating virtual environment at: /opt/test-venv
+Downloading pydantic-core (2.1MiB)
+Downloading asyncpg (3.6MiB)
+Downloading apprise (2.3MiB)
+Downloading prefect (6.7MiB)
+Downloading cryptography (4.5MiB)
+Downloading beartype (1.5MiB)
+Downloading sqlalchemy (4.5MiB)
+Downloading pygments (1.2MiB)
+Downloading burner-redis (1.3MiB)
+ Downloaded pygments
+ Downloaded burner-redis
+ Downloaded beartype
+ Downloaded pydantic-core
+ Downloaded apprise
+ Downloaded asyncpg
+ Downloaded sqlalchemy
+ Downloaded cryptography
+ Downloaded prefect
+Prepared 105 packages in 2.21s
+Installed 105 packages in 239ms
+ + aiosqlite==0.22.1
+ + alembic==1.20.1
+ + amplitude-analytics==1.3.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.16.0
+ + apprise==2.0.1
+ + asgi-lifespan==2.1.0
+ + asyncpg==0.32.0
+ + attrs==26.1.0
+ + beartype==0.23.1
+ + burner-redis==0.1.7
+ + cachetools==5.5.2
+ + certifi==2026.10.23
+ + cffi==2.1.1
+ + charset-normalizer==3.5.2
+ + click==8.5.0
+ + cloudpickle==3.1.2
+ + colorama==0.4.6
+ + coolname==5.0.0
+ + cronsim==2.7
+ + cryptography==50.0.2
+ + cyclopts==5.3.2
+ + dateparser==1.4.3
+ + docker==7.2.0
+ + docstring-parser==0.18.0
+ + exceptiongroup==1.3.1
+ + fastapi==0.150.0
+ + fsspec==2026.9.0
+ + graphviz==0.21
+ + greenlet==3.5.6
+ + griffe==2.4.1
+ + griffecli==2.4.1
+ + griffelib==2.4.1
+ + h11==0.16.0
+ + h2==4.4.1
+ + hpack==4.2.0
+ + httpcore==1.0.9
+ + httpx==0.28.1
+ + humanize==4.16.0
+ + hyperframe==6.1.0
+ + idna==3.20
+ + jinja2==3.1.6
+ + jinja2-humanize-extension==0.4.0
+ + jsonpatch==1.38
+ + jsonpointer==3.6
+ + jsonschema==4.26.0
+ + jsonschema-specifications==2025.9.1
+ + mako==1.4.3
+ + markdown==3.11.2
+ + markdown-it-py==4.2.0
+ + markupsafe==3.0.4
+ + mdurl==0.1.2
+ + oauthlib==4.0.1
+ + opentelemetry-api==1.45.2
+ + orjson==3.13.0
+ + packaging==24.2
+ + pathspec==1.1.1
+ + pendulum==3.3.0
+ + pluggy==1.7.0
+ + prefect==3.9.1
+ + prometheus-client==0.26.0
+ + py-key-value-aio==0.4.6
+ + pycparser==3.12
+ + pydantic==2.14.2
+ + pydantic-core==2.50.2
+ + pydantic-extra-types==2.11.1
+ + pydantic-settings==2.16.2
+ + pydocket==0.27.1
+ + pygments==2.21.0
+ + python-dateutil==2.9.0.post0
+ + python-dotenv==1.2.4
+ + python-json-logger==4.2.0
+ + python-slugify==9.1.3
+ + pytz==2026.6
+ + pyyaml==6.0.3
+ + readchar==4.2.2
+ + redis==8.1.0
+ + referencing==0.37.0
+ + regex==2026.9.29
+ + requests==2.34.2
+ + requests-oauthlib==2.0.0
+ + rfc3339-validator==0.1.4
+ + rich==15.0.0
+ + rich-rst==2.2.0
+ + rpds-py==2026.9.1
+ + ruamel-yaml==0.19.1
+ + semver==3.1.0
+ + shellingham==1.5.4
+ + six==1.17.0
+ + sniffio==1.3.1
+ + sqlalchemy==2.1.6
+ + starlette==1.10.0
+ + text-unidecode==1.3
+ + toml==0.10.2
+ + typer==0.27.3
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + tzdata==2026.6
+ + tzlocal==5.4.5
+ + uncalled-for==0.4.1
+ + urllib3==2.8.0
+ + uvicorn==0.54.0
+ + websockets==16.1.1
+ + whenever==0.11.0
+test_changed_bytes_at_same_path_invalidate_cache (test_release.ReleaseContractTests.test_changed_bytes_at_same_path_invalidate_cache) ... ok
+test_complete_bound_report_allowed (test_release.ReleaseContractTests.test_complete_bound_report_allowed) ... ok
+test_every_preparation_setting_invalidates_cache (test_release.ReleaseContractTests.test_every_preparation_setting_invalidates_cache) ... ok
+test_failed_atomic_replace_preserves_previous_bytes (test_release.ReleaseContractTests.test_failed_atomic_replace_preserves_previous_bytes) ... ok
+test_incomplete_false_and_truthy_string_rejected (test_release.ReleaseContractTests.test_incomplete_false_and_truthy_string_rejected) ... ok
+test_invalid_digest_and_schema_rejected (test_release.ReleaseContractTests.test_invalid_digest_and_schema_rejected) ... ok
+test_invalid_metric_rejected (test_release.ReleaseContractTests.test_invalid_metric_rejected) ... ok
+test_key_ignores_path_and_mapping_order (test_release.ReleaseContractTests.test_key_ignores_path_and_mapping_order) ... ok
+test_missing_fields_rejected (test_release.ReleaseContractTests.test_missing_fields_rejected) ... ok
+test_publish_and_repeat (test_release.ReleaseContractTests.test_publish_and_repeat) ... ok
+test_rejection_preserves_previous_bytes (test_release.ReleaseContractTests.test_rejection_preserves_previous_bytes) ... ok
+test_report_binding_mismatch_rejected (test_release.ReleaseContractTests.test_report_binding_mismatch_rejected) ... ok
+test_runtime_change_with_stale_hash_rejected (test_release.ReleaseContractTests.test_runtime_change_with_stale_hash_rejected) ... ok
+test_disk_error_leaves_bytes_and_cleans_temporary_files (test_safety.SafetyTests.test_disk_error_leaves_bytes_and_cleans_temporary_files) ... ok
+test_identity_includes_runtime_and_evaluation (test_safety.SafetyTests.test_identity_includes_runtime_and_evaluation) ... ok
+test_nan_and_bad_binding_fail_closed (test_safety.SafetyTests.test_nan_and_bad_binding_fail_closed) ... ok
+test_pointer_journal_crash_recovered_without_duplicate (test_safety.SafetyTests.test_pointer_journal_crash_recovered_without_duplicate) ... ok
+test_prefect_creates_missing_parent_directories_on_clean_start (test_safety.SafetyTests.test_prefect_creates_missing_parent_directories_on_clean_start) ... ok
+test_tampered_artifact_rejected_before_pointer_update (test_safety.SafetyTests.test_tampered_artifact_rejected_before_pointer_update) ... ok
+test_cache_recovery_and_invalidation_across_processes (test_system.SystemTests.test_cache_recovery_and_invalidation_across_processes) ... ok
+test_http_invalid_requests_never_call_backend (test_system.SystemTests.test_http_invalid_requests_never_call_backend) ... ok
+test_http_loaded_version_restart_and_rollback (test_system.SystemTests.test_http_loaded_version_restart_and_rollback) ... ok
+test_http_readiness_blocks_generation_until_warmup (test_system.SystemTests.test_http_readiness_blocks_generation_until_warmup) ... ok
+test_incomplete_foreign_and_rejected_reports_preserve_pointer (test_system.SystemTests.test_incomplete_foreign_and_rejected_reports_preserve_pointer) ... ok
+test_repeat_release_has_one_event_across_processes (test_system.SystemTests.test_repeat_release_has_one_event_across_processes) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 9.058s
+
+OK
+Создан синтетический стенд: /tmp/tmp9eou4igy/workspace
+Создан синтетический стенд: /tmp/tmpo3k8cz3v/workspace
+Создан синтетический стенд: /tmp/tmpvs9xj93t/workspace
+Создан синтетический стенд: /tmp/tmpl8irvz41/workspace
+Создан синтетический стенд: /tmp/tmpx8ozrclp/workspace
+Создан синтетический стенд: /tmp/tmpjtuan2yu/workspace
+STUB_LIFECYCLE before_restart {"answer": "STUB ONLY: fixture-A", "output_tokens": 1, "model_id": "fixture-A", "runtime_sha256": "bc7bd5a4806e2e0e3b8569666b251d6c59a8d8e01e37fc37bf95b534023ca547", "request_id": "2e433504-6449-4e1f-9fef-3d39b8bb9061", "queue_seconds": 0.0001873339970188681, "generation_seconds": 0.011450166002759943, "total_seconds": 0.011637499999778811}
+STUB_LIFECYCLE after_restart {"answer": "STUB ONLY: fixture-B", "output_tokens": 1, "model_id": "fixture-B", "runtime_sha256": "bc7bd5a4806e2e0e3b8569666b251d6c59a8d8e01e37fc37bf95b534023ca547", "request_id": "21b307cc-1cd5-4b50-a961-9096b08275df", "queue_seconds": 0.00013158300134819, "generation_seconds": 0.01193858300030115, "total_seconds": 0.01207016600164934}
+STUB_LIFECYCLE after_rollback {"answer": "STUB ONLY: fixture-A", "output_tokens": 1, "model_id": "fixture-A", "runtime_sha256": "bc7bd5a4806e2e0e3b8569666b251d6c59a8d8e01e37fc37bf95b534023ca547", "request_id": "10c2419c-5db6-4dd3-9bd3-d1b62965a588", "queue_seconds": 0.00013337499694898725, "generation_seconds": 0.012639667002076749, "total_seconds": 0.012773041999025736}
+PUBLIC_TESTS_SHA256=03632e58fa10f8742a205ae04ecba956f7a7cd0a0cfb90fc7fa9d32d6f2c1d7e
+Итог: 25/25
+Отпечаток выданных тестов: 09bd65e6b886

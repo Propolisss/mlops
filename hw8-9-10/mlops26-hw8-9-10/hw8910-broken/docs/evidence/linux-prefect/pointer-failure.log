@@ -1,0 +1,129 @@
+$ /opt/test-venv/bin/python flow.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180-crash --fail-after-pointer
+18:53:33.094 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8297
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+18:53:35.906 | INFO    | Flow run 'topaz-harrier' - Beginning flow run 'topaz-harrier' for flow 'model-release'
+18:53:35.933 | INFO    | Task run 'prepare_input-e57' - Finished in state Cached(type=COMPLETED)
+18:53:35.935 | INFO    | Task run 'acquire_artifact-959' - READ_EXISTING_ARTIFACT fixture-B; no training
+18:53:35.936 | INFO    | Task run 'acquire_artifact-959' - Finished in state Completed()
+18:53:35.939 | INFO    | Task run 'evaluate_admission-e21' - Finished in state Completed()
+18:53:35.943 | ERROR   | Task run 'publish_version-f27' - Task run failed with exception: RuntimeError('Injected failure after pointer update')
+Traceback (most recent call last):
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1058, in run_context
+    yield self
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1755, in run_task_sync
+    engine.call_task_fn(txn)
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1075, in call_task_fn
+    result = call_with_parameters(self.task.fn, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/flow.py", line 114, in publish_version
+    result = release.publication(root, manifest, report, fail_after_pointer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/release.py", line 149, in publication
+    raise RuntimeError("Injected failure after pointer update")
+RuntimeError: Injected failure after pointer update
+18:53:35.947 | ERROR   | Task run 'publish_version-f27' - Finished in state Failed('Task run encountered an exception RuntimeError: Injected failure after pointer update')
+18:53:36.930 | ERROR   | Flow run 'topaz-harrier' - Encountered exception during execution: RuntimeError('Injected failure after pointer update')
+Traceback (most recent call last):
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1339, in run_context
+    yield self
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2133, in run_flow_sync
+    engine.call_flow_fn()
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1361, in call_flow_fn
+    result = call_with_parameters(self.flow.fn, self.parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/flow.py", line 140, in release_flow
+    result = publish_version(root, artifact, decision, fail_after_pointer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/tasks.py", line 1240, in __call__
+    return run_task(
+           ^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1988, in run_task
+    return run_task_sync(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1758, in run_task_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 622, in result
+    raise self._raised
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1058, in run_context
+    yield self
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1755, in run_task_sync
+    engine.call_task_fn(txn)
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1075, in call_task_fn
+    result = call_with_parameters(self.task.fn, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/flow.py", line 114, in publish_version
+    result = release.publication(root, manifest, report, fail_after_pointer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/release.py", line 149, in publication
+    raise RuntimeError("Injected failure after pointer update")
+RuntimeError: Injected failure after pointer update
+18:53:36.954 | INFO    | Flow run 'topaz-harrier' - Finished in state Failed('Flow run encountered an exception: RuntimeError: Injected failure after pointer update')
+Traceback (most recent call last):
+  File "/tmp/flow-check/flow.py", line 183, in <module>
+    main()
+  File "/tmp/flow-check/flow.py", line 173, in main
+    release_flow(
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flows.py", line 1887, in __call__
+    return run_flow(
+           ^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2290, in run_flow
+    ret_val = run_flow_sync(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2135, in run_flow_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 788, in result
+    raise self._raised
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1339, in run_context
+    yield self
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2133, in run_flow_sync
+    engine.call_flow_fn()
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1361, in call_flow_fn
+    result = call_with_parameters(self.flow.fn, self.parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/flow.py", line 140, in release_flow
+    result = publish_version(root, artifact, decision, fail_after_pointer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/tasks.py", line 1240, in __call__
+    return run_task(
+           ^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1988, in run_task
+    return run_task_sync(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1758, in run_task_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 622, in result
+    raise self._raised
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1058, in run_context
+    yield self
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1755, in run_task_sync
+    engine.call_task_fn(txn)
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1075, in call_task_fn
+    result = call_with_parameters(self.task.fn, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/flow.py", line 114, in publish_version
+    result = release.publication(root, manifest, report, fail_after_pointer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/release.py", line 149, in publication
+    raise RuntimeError("Injected failure after pointer update")
+RuntimeError: Injected failure after pointer update
+18:53:36.972 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8297
+
+EXIT_CODE=1

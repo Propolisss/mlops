@@ -1,0 +1,243 @@
+Using CPython 3.12.12 interpreter at: /usr/local/bin/python3.12
+Creating virtual environment at: /opt/test-venv
+Downloading pydantic-core (2.1MiB)
+Downloading beartype (1.5MiB)
+Downloading cryptography (4.5MiB)
+Downloading sqlalchemy (4.5MiB)
+Downloading pygments (1.2MiB)
+Downloading prefect (6.7MiB)
+Downloading burner-redis (1.3MiB)
+Downloading apprise (2.3MiB)
+Downloading asyncpg (3.6MiB)
+ Downloaded pygments
+ Downloaded burner-redis
+ Downloaded beartype
+ Downloaded pydantic-core
+ Downloaded apprise
+ Downloaded asyncpg
+ Downloaded sqlalchemy
+ Downloaded cryptography
+ Downloaded prefect
+Prepared 105 packages in 2.05s
+Installed 105 packages in 242ms
+ + aiosqlite==0.22.1
+ + alembic==1.20.1
+ + amplitude-analytics==1.3.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.16.0
+ + apprise==2.0.1
+ + asgi-lifespan==2.1.0
+ + asyncpg==0.32.0
+ + attrs==26.1.0
+ + beartype==0.23.1
+ + burner-redis==0.1.7
+ + cachetools==5.5.2
+ + certifi==2026.10.23
+ + cffi==2.1.1
+ + charset-normalizer==3.5.2
+ + click==8.5.0
+ + cloudpickle==3.1.2
+ + colorama==0.4.6
+ + coolname==5.0.0
+ + cronsim==2.7
+ + cryptography==50.0.2
+ + cyclopts==5.3.2
+ + dateparser==1.4.3
+ + docker==7.2.0
+ + docstring-parser==0.18.0
+ + exceptiongroup==1.3.1
+ + fastapi==0.150.0
+ + fsspec==2026.9.0
+ + graphviz==0.21
+ + greenlet==3.5.6
+ + griffe==2.4.1
+ + griffecli==2.4.1
+ + griffelib==2.4.1
+ + h11==0.16.0
+ + h2==4.4.1
+ + hpack==4.2.0
+ + httpcore==1.0.9
+ + httpx==0.28.1
+ + humanize==4.16.0
+ + hyperframe==6.1.0
+ + idna==3.20
+ + jinja2==3.1.6
+ + jinja2-humanize-extension==0.4.0
+ + jsonpatch==1.38
+ + jsonpointer==3.6
+ + jsonschema==4.26.0
+ + jsonschema-specifications==2025.9.1
+ + mako==1.4.3
+ + markdown==3.11.2
+ + markdown-it-py==4.2.0
+ + markupsafe==3.0.4
+ + mdurl==0.1.2
+ + oauthlib==4.0.1
+ + opentelemetry-api==1.45.2
+ + orjson==3.13.0
+ + packaging==24.2
+ + pathspec==1.1.1
+ + pendulum==3.3.0
+ + pluggy==1.7.0
+ + prefect==3.9.1
+ + prometheus-client==0.26.0
+ + py-key-value-aio==0.4.6
+ + pycparser==3.12
+ + pydantic==2.14.2
+ + pydantic-core==2.50.2
+ + pydantic-extra-types==2.11.1
+ + pydantic-settings==2.16.2
+ + pydocket==0.27.1
+ + pygments==2.21.0
+ + python-dateutil==2.9.0.post0
+ + python-dotenv==1.2.4
+ + python-json-logger==4.2.0
+ + python-slugify==9.1.3
+ + pytz==2026.6
+ + pyyaml==6.0.3
+ + readchar==4.2.2
+ + redis==8.1.0
+ + referencing==0.37.0
+ + regex==2026.9.29
+ + requests==2.34.2
+ + requests-oauthlib==2.0.0
+ + rfc3339-validator==0.1.4
+ + rich==15.0.0
+ + rich-rst==2.2.0
+ + rpds-py==2026.9.1
+ + ruamel-yaml==0.19.1
+ + semver==3.1.0
+ + shellingham==1.5.4
+ + six==1.17.0
+ + sniffio==1.3.1
+ + sqlalchemy==2.1.6
+ + starlette==1.10.0
+ + text-unidecode==1.3
+ + toml==0.10.2
+ + typer==0.27.3
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + tzdata==2026.6
+ + tzlocal==5.4.5
+ + uncalled-for==0.4.1
+ + urllib3==2.8.0
+ + uvicorn==0.54.0
+ + websockets==16.1.1
+ + whenever==0.11.0
+flow-init: exit=0
+flow-failure: exit=1
+flow-recovery: exit=1
+Traceback (most recent call last):
+  File "/tmp/flow-check/tools/evidence.py", line 194, in <module>
+    main()
+  File "/tmp/flow-check/tools/evidence.py", line 188, in main
+    flows()
+  File "/tmp/flow-check/tools/evidence.py", line 87, in flows
+    _, recovered = invoke(args, "flow-recovery", env=env)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/flow-check/tools/evidence.py", line 34, in invoke
+    raise RuntimeError(text[-6000:])
+RuntimeError: )
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1324, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 709, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 166, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 174, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 386, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 671, in __init__
+    self.__connect()
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 916, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 166, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 912, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 645, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 869, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/dialects/sqlite/aiosqlite.py", line 301, in connect
+    return AsyncAdapt_aiosqlite_connection(self, await_(connection))
+                                                 ^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/util/concurrency.py", line 167, in await_
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/sqlalchemy/util/concurrency.py", line 205, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/aiosqlite/core.py", line 168, in _connect
+    self._connection = await future
+                       ^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/aiosqlite/core.py", line 63, in _connection_worker_thread
+    result = function()
+             ^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/aiosqlite/core.py", line 466, in connector
+    return sqlite3.connect(loc, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unable to open database file
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+18:50:52.998 | ERROR   | uvicorn.error - Application startup failed. Exiting.
+/opt/test-venv/lib/python3.12/site-packages/prefect/context.py:1113: UserWarning: Failed to create the Prefect home directory at /tmp/flow-check/.cache/prefect
+  GLOBAL_SETTINGS_CONTEXT: SettingsContext = root_settings_context()
+Traceback (most recent call last):
+  File "/tmp/flow-check/flow.py", line 182, in <module>
+    main()
+  File "/tmp/flow-check/flow.py", line 172, in main
+    release_flow(
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flows.py", line 1887, in __call__
+    return run_flow(
+           ^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2290, in run_flow
+    ret_val = run_flow_sync(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2130, in run_flow_sync
+    with engine.start():
+         ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1313, in start
+    with self.initialize_run():
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1197, in initialize_run
+    with SyncClientContext.get_or_create() as client_ctx:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/context.py", line 341, in get_or_create
+    with cls() as ctx:
+         ^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/context.py", line 309, in __init__
+    client=get_client(sync_client=True, httpx_settings=httpx_settings),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/client/orchestration/__init__.py", line 253, in get_client
+    server.start()
+  File "/opt/test-venv/lib/python3.12/site-packages/prefect/server/api/server.py", line 1174, in start
+    raise RuntimeError(error_message)
+RuntimeError: Timed out while attempting to connect to ephemeral Prefect API server.
+18:50:54.336 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8045
+
+EXIT_CODE=1
+

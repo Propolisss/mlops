@@ -1,0 +1,7 @@
+test_prefect_creates_missing_parent_directories_on_clean_start (test_safety.SafetyTests.test_prefect_creates_missing_parent_directories_on_clean_start) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.494s
+
+OK
+Создан синтетический стенд: /var/folders/f1/9h3t2fc10tdcksx2hb366y4w0000gn/T/tmpnncpl964/workspace

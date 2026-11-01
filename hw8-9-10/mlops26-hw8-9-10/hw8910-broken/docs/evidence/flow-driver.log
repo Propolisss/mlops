@@ -1,0 +1,10 @@
+flow-init: exit=0
+flow-failure: exit=1
+flow-recovery: exit=0
+flow-invalidation: exit=0
+flow-repeat: exit=0
+flow-reject: exit=1
+pointer-init: exit=0
+pointer-failure: exit=1
+pointer-recovery: exit=0
+pointer-repeat: exit=0

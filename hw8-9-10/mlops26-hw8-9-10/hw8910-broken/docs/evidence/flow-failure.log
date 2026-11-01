@@ -1,0 +1,54 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python flow.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc --fail-after-prepare
+21:54:12.944 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8757
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+21:54:14.608 | INFO    | Flow run 'blond-tody' - Beginning flow run 'blond-tody' for flow 'model-release'
+21:54:14.618 | INFO    | Task run 'prepare_input-fa1' - PREPARED 88bbd559a04a7a432693a1c611ef2704bb711ac17dd5e22203ee9e5020f59fd4 rows=2
+21:54:14.620 | INFO    | Task run 'prepare_input-fa1' - Finished in state Completed()
+21:54:15.620 | ERROR   | Flow run 'blond-tody' - Encountered exception during execution: RuntimeError('Injected failure after preparation')
+Traceback (most recent call last):
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1339, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2133, in run_flow_sync
+    engine.call_flow_fn()
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1361, in call_flow_fn
+    result = call_with_parameters(self.flow.fn, self.parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 137, in release_flow
+    raise RuntimeError("Injected failure after preparation")
+RuntimeError: Injected failure after preparation
+21:54:15.635 | INFO    | Flow run 'blond-tody' - Finished in state Failed('Flow run encountered an exception: RuntimeError: Injected failure after preparation')
+Traceback (most recent call last):
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 183, in <module>
+    main()
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 173, in main
+    release_flow(
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flows.py", line 1887, in __call__
+    return run_flow(
+           ^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2290, in run_flow
+    ret_val = run_flow_sync(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2135, in run_flow_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 788, in result
+    raise self._raised
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1339, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2133, in run_flow_sync
+    engine.call_flow_fn()
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1361, in call_flow_fn
+    result = call_with_parameters(self.flow.fn, self.parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 137, in release_flow
+    raise RuntimeError("Injected failure after preparation")
+RuntimeError: Injected failure after preparation
+21:54:15.645 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8757
+
+EXIT_CODE=1

@@ -1,0 +1,14 @@
+$ /opt/test-venv/bin/python flow.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180
+18:53:20.715 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8015
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+18:53:23.450 | INFO    | Flow run 'silky-malamute' - Beginning flow run 'silky-malamute' for flow 'model-release'
+18:53:23.480 | INFO    | Task run 'prepare_input-a31' - Finished in state Cached(type=COMPLETED)
+18:53:23.482 | INFO    | Task run 'acquire_artifact-936' - READ_EXISTING_ARTIFACT fixture-B; no training
+18:53:23.483 | INFO    | Task run 'acquire_artifact-936' - Finished in state Completed()
+18:53:23.485 | INFO    | Task run 'evaluate_admission-30c' - Finished in state Completed()
+18:53:23.489 | INFO    | Task run 'publish_version-f37' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+18:53:23.490 | INFO    | Task run 'publish_version-f37' - Finished in state Completed()
+18:53:24.477 | INFO    | Flow run 'silky-malamute' - Finished in state Completed()
+18:53:24.498 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8015
+
+EXIT_CODE=0

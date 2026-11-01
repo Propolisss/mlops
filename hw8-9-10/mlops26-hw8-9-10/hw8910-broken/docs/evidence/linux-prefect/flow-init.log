@@ -1,0 +1,4 @@
+$ /opt/test-venv/bin/python lab.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180 init
+Создан синтетический стенд: /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180
+
+EXIT_CODE=0

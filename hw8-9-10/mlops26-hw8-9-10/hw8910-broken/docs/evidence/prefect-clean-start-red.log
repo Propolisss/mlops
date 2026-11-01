@@ -1,0 +1,20 @@
+test_prefect_creates_missing_parent_directories_on_clean_start (test_safety.SafetyTests.test_prefect_creates_missing_parent_directories_on_clean_start) ... FAIL
+
+======================================================================
+FAIL: test_prefect_creates_missing_parent_directories_on_clean_start (test_safety.SafetyTests.test_prefect_creates_missing_parent_directories_on_clean_start)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/integration/test_safety.py", line 88, in test_prefect_creates_missing_parent_directories_on_clean_start
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 1 != 0 : /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/context.py:1113: UserWarning: Failed to create the Prefect home directory at /var/folders/f1/9h3t2fc10tdcksx2hb366y4w0000gn/T/tmp9xrp2isl/new-parent/prefect
+  GLOBAL_SETTINGS_CONTEXT: SettingsContext = root_settings_context()
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AssertionError
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.608s
+
+FAILED (failures=1)
+Создан синтетический стенд: /var/folders/f1/9h3t2fc10tdcksx2hb366y4w0000gn/T/tmp9xrp2isl/workspace

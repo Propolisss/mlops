@@ -1,0 +1,125 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python flow.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.real --manifest manifest-candidate.json --report release-report.json
+21:54:49.371 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8948
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+21:54:50.808 | INFO    | Flow run 'phenomenal-numbat' - Beginning flow run 'phenomenal-numbat' for flow 'model-release'
+21:54:50.815 | INFO    | Task run 'prepare_input-139' - Finished in state Cached(type=COMPLETED)
+21:54:50.835 | INFO    | Task run 'acquire_artifact-3f9' - READ_EXISTING_ARTIFACT models:/my-qwen-adapter/2; no training
+21:54:50.836 | INFO    | Task run 'acquire_artifact-3f9' - Finished in state Completed()
+21:54:50.843 | ERROR   | Task run 'evaluate_admission-c7b' - Task run failed with exception: ValueError('Incomplete or rejected evaluation')
+Traceback (most recent call last):
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1058, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1755, in run_task_sync
+    engine.call_task_fn(txn)
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1075, in call_task_fn
+    result = call_with_parameters(self.task.fn, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 103, in evaluate_admission
+    release.validate_release(manifest, report)
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/release.py", line 58, in validate_release
+    raise ValueError("Incomplete or rejected evaluation")
+ValueError: Incomplete or rejected evaluation
+21:54:50.845 | ERROR   | Task run 'evaluate_admission-c7b' - Finished in state Failed('Task run encountered an exception ValueError: Incomplete or rejected evaluation')
+21:54:51.818 | ERROR   | Flow run 'phenomenal-numbat' - Encountered exception during execution: ValueError('Incomplete or rejected evaluation')
+Traceback (most recent call last):
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1339, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2133, in run_flow_sync
+    engine.call_flow_fn()
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1361, in call_flow_fn
+    result = call_with_parameters(self.flow.fn, self.parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 139, in release_flow
+    decision = evaluate_admission(root, artifact, report_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/tasks.py", line 1240, in __call__
+    return run_task(
+           ^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1988, in run_task
+    return run_task_sync(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1758, in run_task_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 622, in result
+    raise self._raised
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1058, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1755, in run_task_sync
+    engine.call_task_fn(txn)
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1075, in call_task_fn
+    result = call_with_parameters(self.task.fn, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 103, in evaluate_admission
+    release.validate_release(manifest, report)
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/release.py", line 58, in validate_release
+    raise ValueError("Incomplete or rejected evaluation")
+ValueError: Incomplete or rejected evaluation
+21:54:51.844 | INFO    | Flow run 'phenomenal-numbat' - Finished in state Failed('Flow run encountered an exception: ValueError: Incomplete or rejected evaluation')
+Traceback (most recent call last):
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 183, in <module>
+    main()
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 173, in main
+    release_flow(
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flows.py", line 1887, in __call__
+    return run_flow(
+           ^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2290, in run_flow
+    ret_val = run_flow_sync(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2135, in run_flow_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 788, in result
+    raise self._raised
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1339, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 2133, in run_flow_sync
+    engine.call_flow_fn()
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/flow_engine.py", line 1361, in call_flow_fn
+    result = call_with_parameters(self.flow.fn, self.parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 139, in release_flow
+    decision = evaluate_admission(root, artifact, report_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/tasks.py", line 1240, in __call__
+    return run_task(
+           ^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1988, in run_task
+    return run_task_sync(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1758, in run_task_sync
+    return engine.state if return_type == "state" else engine.result()
+                                                       ^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 622, in result
+    raise self._raised
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1058, in run_context
+    yield self
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1755, in run_task_sync
+    engine.call_task_fn(txn)
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/task_engine.py", line 1075, in call_task_fn
+    result = call_with_parameters(self.task.fn, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/lib/python3.12/site-packages/prefect/utilities/callables/__init__.py", line 404, in call_with_parameters
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/flow.py", line 103, in evaluate_admission
+    release.validate_release(manifest, report)
+  File "/Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/release.py", line 58, in validate_release
+    raise ValueError("Incomplete or rejected evaluation")
+ValueError: Incomplete or rejected evaluation
+21:54:51.856 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8948
+
+EXIT_CODE=1

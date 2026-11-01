@@ -1,0 +1,15 @@
+$ /opt/test-venv/bin/python flow.py --workspace /tmp/flow-check/.lab-flow/78d51f27-3df7-4c27-ad20-2c6c8432b180
+18:53:14.506 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8546
+See https://www.prefect.io/docs/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+18:53:17.263 | INFO    | Flow run 'metal-hamster' - Beginning flow run 'metal-hamster' for flow 'model-release'
+18:53:17.292 | INFO    | Task run 'prepare_input-7b8' - PREPARED 40daa38c4b0e249e64c596a7ec8943b0ee4749c1e322412b07de4785201d05a6 rows=1
+18:53:17.296 | INFO    | Task run 'prepare_input-7b8' - Finished in state Completed()
+18:53:17.297 | INFO    | Task run 'acquire_artifact-f03' - READ_EXISTING_ARTIFACT fixture-B; no training
+18:53:17.298 | INFO    | Task run 'acquire_artifact-f03' - Finished in state Completed()
+18:53:17.301 | INFO    | Task run 'evaluate_admission-8e0' - Finished in state Completed()
+18:53:17.304 | INFO    | Task run 'publish_version-758' - PUBLISHED fixture-B release=330dceb4a062a6dbd7d2b1068989621f0aa10ac463e74ea41f90b97a2d318eda
+18:53:17.305 | INFO    | Task run 'publish_version-758' - Finished in state Completed()
+18:53:18.296 | INFO    | Flow run 'metal-hamster' - Finished in state Completed()
+18:53:18.321 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8546
+
+EXIT_CODE=0

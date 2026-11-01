@@ -1,0 +1,4 @@
+$ /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.venv/bin/python lab.py --workspace /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc init
+Создан синтетический стенд: /Users/artemvoevodin/bmstu/mlops/hw8-9-10/mlops26-hw8-9-10/hw8910-broken/.lab-flow/85ec0c02-8ebe-4168-ae8a-80b8b29f78dc
+
+EXIT_CODE=0
