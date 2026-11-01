@@ -122,9 +122,11 @@ class SystemTests(unittest.TestCase):
             self.assertIn("PREPARED", self.command("run").stdout)
 
     def test_incomplete_foreign_and_rejected_reports_preserve_pointer(self):
-        before = (self.root / "accepted.json").read_bytes()
         for name in ["report-incomplete.json", "report-A.json", "report-reject.json"]:
             with self.subTest(report=name):
+                self.root = Path(self.tmp.name) / name.removesuffix(".json")
+                self.command("init")
+                before = (self.root / "accepted.json").read_bytes()
                 result = self.command("run", "--report", name, success=False)
                 self.assertNotEqual(result.returncode, 0, result.stdout)
                 self.assertEqual((self.root / "accepted.json").read_bytes(), before)
@@ -204,8 +206,10 @@ class SystemTests(unittest.TestCase):
         ]
         for payload in invalid:
             with self.subTest(payload=str(payload)[:100]):
+                before = self.request("/debug")[1]["calls"]
                 self.assertIn(self.request("/generate", payload)[0], (400, 413, 422))
                 self.assertEqual(self.request("/debug")[1]["calls"], before)
+        before = self.request("/debug")[1]["calls"]
         self.assertEqual(
             self.request("/generate", {"prompt": "ticket", "max_new_tokens": 32})[0],
             200,

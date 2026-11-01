@@ -1,5 +1,7 @@
 import copy
 import json
+import os
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -75,6 +77,23 @@ class SafetyTests(unittest.TestCase):
                         self.root, self.manifest, {**self.report, field: value}
                     )
                 self.assertEqual((self.root / "accepted.json").read_bytes(), before)
+
+    def test_prefect_creates_missing_parent_directories_on_clean_start(self):
+        home = Path(self.tmp.name) / "new-parent" / "prefect"
+        project = Path(__file__).resolve().parents[1]
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                'import flow; import os; from pathlib import Path; assert Path(os.environ["PREFECT_HOME"]).is_dir()',
+            ],
+            cwd=self.tmp.name,
+            env={**os.environ, "PYTHONPATH": str(project), "PREFECT_HOME": str(home)},
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from pathlib import Path
 import uuid
 
 os.environ.setdefault("PREFECT_HOME", str(Path(".cache/prefect").resolve()))
+Path(os.environ["PREFECT_HOME"]).mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("PREFECT_SERVER_ANALYTICS_ENABLED", "false")
 os.environ.setdefault("PREFECT_LOGGING_LEVEL", "INFO")
 
