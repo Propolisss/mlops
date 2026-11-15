@@ -1,0 +1,39 @@
+{
+  "sha256": {
+    "experiments.py": "a0ba3e78b6dc70ac9b674d4ec3b2aaf71815c98116c06ea9e4c96ea92d636bdc",
+    "cluster.py": "cf6e6e460a20d4fd9d1647191a439dafe81a5027b86e0e65dcac566a2a5fbd94",
+    "app.py": "a49ce774d4ffb4e7ed7fe23c84317b5be1fc21dbcd727fc9928a29d919de6dbd",
+    "load.py": "5a65b8224b6650200097326c81b6eb5d578f92ca46164dfc80e40c1e8e89133b",
+    "Dockerfile": "f34cb516fa598d35523ad51a0fab4182d6b5d4b976b23791578f8de1f7c78b69",
+    "requirements.txt": "7fe9a577ef265febc7be904468be68a6d63c284dcd2c86a948e50193a263c042",
+    "uv.lock": "3f9741c9a74219af2e0f255c50c1e7108a2e972f822b6aa37f26466b0326f07b",
+    "chart/Chart.yaml": "77e91dbd40c16bb0a4bc3b24c2fd70b8b67e3ce3d2682e12c062c391712cc853",
+    "chart/values.yaml": "f48b471a4ff859262e3a8cf9bfa0bccc2e1a138c382585c76e67242654a7dd91",
+    "chart/templates/api.yaml": "913d1df56b5d3f49c0ffafe26ac555e60f16739a926dee3d001a2945f7142ecf",
+    "monitoring/datasource.yml": "cfa918a3f6b73051e15c7b3c82941027d20e6602a4e379c8954165c45eea4e6d",
+    "monitoring/provider.yml": "7b561d533d5edb0f65b9a928caca1373e277ea30220ca8f034fc57cb7f48f9e4",
+    "monitoring/dashboard-export.json": "cd6a19f7a2e087f7b9deb0e6e123669e44d06f9229c4041ade11de790c24b4a7",
+    "monitoring/stack.yaml": "2bb4898615c4c1aed70a87f85e65b98be2d334b5c84fa0d08750bed8b2fc9f71",
+    "monitoring/dashboard.json": "d114709154a83ff51bdfe1284602a1d369acc4e27d6d4b6f35d5cec02fba8379",
+    "monitoring/rules.yml": "ea88074e945580e56391be56fb2d7f66ba7e1700f7885174dd8dc6d0f4d8498b",
+    "monitoring/metrics-server.yaml": "ff64d1a13b9ac3b0635f0dd985815fb44c23eed4706c04e5db1daadf6bc0a83b",
+    "monitoring/prometheus.yml": "d17d18ba23e1bac9c27adcd5d7db58baa33c1c8210aba16c9514a71d2b268897",
+    "scripts/verify_results.py": "7d301a105cf0ef8d301d1357d3523526f36b683b141afe95fb8ed1cfc4109fd6",
+    "scripts/dashboard.py": "df8962733c0a742eb0bedbf9d2ca727c9e72c1c991c4baaa5558181ba26cc785",
+    "scripts/setup.py": "1142deed6073e57d2d5003e10800472afdf106296cff456f10bc4bd9200b0227",
+    "scripts/analyze.py": "09d6caf37fd26e2d933a3a9365d5b7cfe5f687454193a8f26c6b7e16be543a3f",
+    "tests/test_controller.py": "af7f3ce8e1ff527054eef650f47bece9b59abb125fc037203457426ae89ea22b",
+    "lecture11-source.json": "4f5570c5fd2c7bea3769a33a2f2160958e0bcf4b74ccc6214b96c73a2f7f0f94",
+    "docs/lecture11-google.jpg": "1ba63e81d368ba61c5ccf707b97ce26a83a0f55261e1538593c0e2c17e99e19f"
+  },
+  "image": {
+    "Id": "sha256:9a0cda6cfb87d33eeaa95c8df6905dcece06c700dd96a6d5ea240270ae490e75",
+    "Size": 236531973,
+    "Architecture": "arm64",
+    "RepoDigests": [
+      "mlops-hw11@sha256:5ceb4e8e42884e4502266f8645ba8b934b5d339fcc12b44c7197854b11123a70"
+    ]
+  },
+  "base_commit": "f342f0c3bd3cfbf6037190e59be3e4f6fe971f98",
+  "note": "Implementation and evidence are committed after these measurements; app.py/load.py match the loaded image."
+}

@@ -1,0 +1,18 @@
+{
+  "planned": 480,
+  "sent": 480,
+  "outcomes": {
+    "completed": 336,
+    "rejected": 144
+  },
+  "pod_distribution": {
+    "api-b8bdbcc87-ms52c": 448,
+    "api-b8bdbcc87-rzpxt": 32
+  },
+  "successful_n": 336,
+  "error_ratio": 0.30000000000000004,
+  "ttfc_p50": 4.825708085994847,
+  "ttfc_p95": 5.145935460499459,
+  "duration_p95": 5.423250366999127,
+  "max_send_lag": 0.07378629978484241
+}

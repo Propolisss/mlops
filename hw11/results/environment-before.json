@@ -1,0 +1,9 @@
+{
+  "platform": "macOS-26.5-arm64-arm-64bit",
+  "machine": "arm64",
+  "disk": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   423Gi    12Gi    98%    6.2M  122M    5%   /System/Volumes/Data\n",
+  "docker": "{\"version\":\"29.9.3\",\"cpus\":14,\"memory\":10378379264,\"arch\":\"aarch64\"}\n",
+  "docker_df": "TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE\nImages          23        16        13.16GB   3.074GB (23%)\nContainers      24        8         7.18GB    7.134GB (99%)\nLocal Volumes   89        9         24.53GB   22.44GB (91%)\nBuild Cache     66        0         5.205GB   811.2MB\n",
+  "kind": "kind v0.30.0 go1.24.6 darwin/arm64\n",
+  "helm": "v4.3.2+g8346aaa\n"
+}

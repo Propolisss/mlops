@@ -1,0 +1,82 @@
+{
+  "population": "completed responses from fresh API Pods, entire B run",
+  "client_n": 480,
+  "prometheus_count": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": [
+        {
+          "metric": {},
+          "value": [
+            1794771172.066,
+            "480"
+          ]
+        }
+      ]
+    }
+  },
+  "server_buckets": {
+    "0.025": 0.0,
+    "0.05": 0.0,
+    "0.1": 0.0,
+    "0.2": 103.0,
+    "0.4": 188.0,
+    "0.8": 291.0,
+    "1.5": 406.0,
+    "3.0": 479.0,
+    "6.0": 480.0,
+    "12.0": 480.0,
+    "30.0": 480.0,
+    "60.0": 480.0,
+    "+Inf": 480.0
+  },
+  "client_buckets": {
+    "0.025": 0,
+    "0.05": 0,
+    "0.1": 0,
+    "0.2": 92,
+    "0.4": 187,
+    "0.8": 282,
+    "1.5": 406,
+    "3.0": 479,
+    "6.0": 480,
+    "12.0": 480,
+    "30.0": 480,
+    "60.0": 480,
+    "+Inf": 480
+  },
+  "prometheus_p95": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": [
+        {
+          "metric": {},
+          "value": [
+            1794771175.855,
+            "2.5273972602739723"
+          ]
+        }
+      ]
+    }
+  },
+  "client_summary": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-7bf4f49949-dgtn5": 239,
+      "api-7bf4f49949-fhf2s": 241
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.5933970629994292,
+    "ttfc_p95": 2.1159635572508697,
+    "duration_p95": 2.391862921500068,
+    "max_send_lag": 0.06387101153086405
+  },
+  "note": "Server admission excludes network transit. Buckets interpolate; client quantiles use raw samples."
+}

@@ -1,0 +1,11 @@
+**
+!hw11/
+!hw11/app.py
+!hw11/load.py
+!hw11/requirements.txt
+!hw8-9-10/
+!hw8-9-10/mlops26-hw8-9-10/
+!hw8-9-10/mlops26-hw8-9-10/hw8910-broken/
+!hw8-9-10/mlops26-hw8-9-10/hw8910-broken/backends.py
+!hw8-9-10/mlops26-hw8-9-10/hw8910-broken/release.py
+!hw8-9-10/mlops26-hw8-9-10/hw8910-broken/service.py

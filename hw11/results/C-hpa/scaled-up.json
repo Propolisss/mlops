@@ -1,0 +1,103 @@
+{
+  "apiVersion": "autoscaling/v2",
+  "kind": "HorizontalPodAutoscaler",
+  "metadata": {
+    "annotations": {
+      "meta.helm.sh/release-name": "hw11",
+      "meta.helm.sh/release-namespace": "hw11"
+    },
+    "creationTimestamp": "2026-11-15T20:14:32Z",
+    "labels": {
+      "app.kubernetes.io/managed-by": "Helm"
+    },
+    "name": "api",
+    "namespace": "hw11",
+    "resourceVersion": "14611",
+    "uid": "269e2c40-6a3e-4203-ad35-e1edcfddaed5"
+  },
+  "spec": {
+    "behavior": {
+      "scaleDown": {
+        "policies": [
+          {
+            "periodSeconds": 15,
+            "type": "Pods",
+            "value": 1
+          }
+        ],
+        "selectPolicy": "Max",
+        "stabilizationWindowSeconds": 60
+      },
+      "scaleUp": {
+        "policies": [
+          {
+            "periodSeconds": 15,
+            "type": "Pods",
+            "value": 1
+          }
+        ],
+        "selectPolicy": "Max",
+        "stabilizationWindowSeconds": 0
+      }
+    },
+    "maxReplicas": 3,
+    "metrics": [
+      {
+        "resource": {
+          "name": "cpu",
+          "target": {
+            "averageUtilization": 70,
+            "type": "Utilization"
+          }
+        },
+        "type": "Resource"
+      }
+    ],
+    "minReplicas": 2,
+    "scaleTargetRef": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "name": "api"
+    }
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-11-15T20:14:47Z",
+        "message": "recommended size matches current size",
+        "reason": "ReadyForNewScale",
+        "status": "True",
+        "type": "AbleToScale"
+      },
+      {
+        "lastTransitionTime": "2026-11-15T20:14:47Z",
+        "message": "the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)",
+        "reason": "ValidMetricFound",
+        "status": "True",
+        "type": "ScalingActive"
+      },
+      {
+        "lastTransitionTime": "2026-11-15T20:15:17Z",
+        "message": "the desired replica count is more than the maximum replica count",
+        "reason": "TooManyReplicas",
+        "status": "True",
+        "type": "ScalingLimited"
+      }
+    ],
+    "currentMetrics": [
+      {
+        "resource": {
+          "current": {
+            "averageUtilization": 103,
+            "averageValue": "103m"
+          },
+          "name": "cpu"
+        },
+        "type": "Resource"
+      }
+    ],
+    "currentReplicas": 3,
+    "desiredReplicas": 3,
+    "lastScaleTime": "2026-11-15T20:15:17Z"
+  }
+}

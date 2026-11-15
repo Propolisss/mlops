@@ -1,0 +1,266 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "hw11",
+          "meta.helm.sh/release-namespace": "hw11"
+        },
+        "creationTimestamp": "2026-11-15T18:44:33Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm"
+        },
+        "name": "api",
+        "namespace": "hw11",
+        "resourceVersion": "644",
+        "uid": "2125f8cb-fb8c-4aec-adcf-a7eb35d152e0"
+      },
+      "spec": {
+        "clusterIP": "10.96.47.120",
+        "clusterIPs": [
+          "10.96.47.120"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "app": "hw11-api"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "hw11",
+          "meta.helm.sh/release-namespace": "hw11"
+        },
+        "creationTimestamp": "2026-11-15T18:44:33Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm"
+        },
+        "name": "api-affinity",
+        "namespace": "hw11",
+        "resourceVersion": "642",
+        "uid": "cb89547a-1bdb-41ad-a24d-e5f8cee3426d"
+      },
+      "spec": {
+        "clusterIP": "10.96.81.136",
+        "clusterIPs": [
+          "10.96.81.136"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "app": "hw11-api"
+        },
+        "sessionAffinity": "ClientIP",
+        "sessionAffinityConfig": {
+          "clientIP": {
+            "timeoutSeconds": 10800
+          }
+        },
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "hw11",
+          "meta.helm.sh/release-namespace": "hw11"
+        },
+        "creationTimestamp": "2026-11-15T18:44:33Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm"
+        },
+        "name": "api-fixed",
+        "namespace": "hw11",
+        "resourceVersion": "650",
+        "uid": "4efe43b3-763d-469d-a3d0-8fef72bf886a"
+      },
+      "spec": {
+        "clusterIP": "10.96.158.16",
+        "clusterIPs": [
+          "10.96.158.16"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "app": "hw11-api"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"grafana\",\"namespace\":\"hw11\"},\"spec\":{\"ports\":[{\"port\":3000}],\"selector\":{\"app\":\"grafana\"}}}\n"
+        },
+        "creationTimestamp": "2026-11-15T18:45:34Z",
+        "name": "grafana",
+        "namespace": "hw11",
+        "resourceVersion": "966",
+        "uid": "3fe87a34-e4fd-4838-8ff4-a89ba2e7c148"
+      },
+      "spec": {
+        "clusterIP": "10.96.83.37",
+        "clusterIPs": [
+          "10.96.83.37"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "port": 3000,
+            "protocol": "TCP",
+            "targetPort": 3000
+          }
+        ],
+        "selector": {
+          "app": "grafana"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"kube-state-metrics\",\"namespace\":\"hw11\"},\"spec\":{\"ports\":[{\"port\":8080}],\"selector\":{\"app\":\"kube-state-metrics\"}}}\n"
+        },
+        "creationTimestamp": "2026-11-15T18:45:34Z",
+        "name": "kube-state-metrics",
+        "namespace": "hw11",
+        "resourceVersion": "950",
+        "uid": "9063f071-c766-489f-85c2-bbeca3dcd927"
+      },
+      "spec": {
+        "clusterIP": "10.96.148.59",
+        "clusterIPs": [
+          "10.96.148.59"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "app": "kube-state-metrics"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"prometheus\",\"namespace\":\"hw11\"},\"spec\":{\"ports\":[{\"port\":9090}],\"selector\":{\"app\":\"prometheus\"}}}\n"
+        },
+        "creationTimestamp": "2026-11-15T18:45:34Z",
+        "name": "prometheus",
+        "namespace": "hw11",
+        "resourceVersion": "928",
+        "uid": "e919f85a-a056-4447-8887-885df9c7cd3d"
+      },
+      "spec": {
+        "clusterIP": "10.96.166.17",
+        "clusterIPs": [
+          "10.96.166.17"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": 9090
+          }
+        ],
+        "selector": {
+          "app": "prometheus"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

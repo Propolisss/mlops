@@ -1,0 +1,25 @@
+{
+  "company": "Google Cloud",
+  "lecture": {
+    "filename": "lecture11-extended.mp4",
+    "sha256": "81f4b06b3ddc2f1858e1019d9e749077765c590125a5636b3c5a9c99ed335031",
+    "duration_seconds": 2734.5,
+    "timestamp_seconds": 510,
+    "slide": "70/224",
+    "title": "Результаты нагрузки Google",
+    "evidence_image": "docs/lecture11-google.jpg"
+  },
+  "primary_source": {
+    "url": "https://cloud.google.com/blog/products/containers-kubernetes/how-gke-inference-gateway-improved-latency-for-vertex-ai",
+    "title": "How we cut Vertex AI latency by 35% with GKE Inference Gateway",
+    "published": "2026-02-07",
+    "authors": ["Fisayo Feyisetan", "Yao Yuan"],
+    "verified": true
+  },
+  "findings": {
+    "prefix_cache_hit_rate_percent": {"before": 35, "after": 70},
+    "deepseek_v3_1_p95_ttft_reduction_percent": 52,
+    "prefix_queue_kv_weights": {"before": [3, 3, 2], "after": [3, 5, 2]}
+  },
+  "connection": "Google increased the queue-depth weight so cached but overloaded replicas could be bypassed. This supports choosing idle B with 0.8s recomputation over A with a 3s queue. Our measured fix removes ClientIP affinity in a CPU simulator; it does not reproduce Google's inference gateway, KV cache, or token-level results."
+}

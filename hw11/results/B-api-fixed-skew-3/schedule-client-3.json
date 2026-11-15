@@ -1,0 +1,233 @@
+{
+  "start_wall": 1794772819.0154939,
+  "duration": 120.0,
+  "rate": 4.0,
+  "scenario": "skew",
+  "client": 3,
+  "entries": [
+    {
+      "index": 8,
+      "offset": 2.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 29,
+      "offset": 7.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 38,
+      "offset": 9.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 59,
+      "offset": 14.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 68,
+      "offset": 17.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 89,
+      "offset": 22.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 98,
+      "offset": 24.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 119,
+      "offset": 29.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 128,
+      "offset": 32.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 149,
+      "offset": 37.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 158,
+      "offset": 39.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 179,
+      "offset": 44.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 188,
+      "offset": 47.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 209,
+      "offset": 52.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 218,
+      "offset": 54.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 239,
+      "offset": 59.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 248,
+      "offset": 62.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 269,
+      "offset": 67.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 278,
+      "offset": 69.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 299,
+      "offset": 74.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 308,
+      "offset": 77.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 329,
+      "offset": 82.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 338,
+      "offset": 84.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 359,
+      "offset": 89.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 368,
+      "offset": 92.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 389,
+      "offset": 97.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=1",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 398,
+      "offset": 99.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 419,
+      "offset": 104.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 428,
+      "offset": 107.0,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 449,
+      "offset": 112.25,
+      "client": 3,
+      "prompt": "support client=3 prefix=0",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 458,
+      "offset": 114.5,
+      "client": 3,
+      "prompt": "support client=3 prefix=2",
+      "max_new_tokens": 4
+    },
+    {
+      "index": 479,
+      "offset": 119.75,
+      "client": 3,
+      "prompt": "support client=3 prefix=3",
+      "max_new_tokens": 4
+    }
+  ]
+}

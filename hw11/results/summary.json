@@ -1,0 +1,424 @@
+{
+  "A-bad-release": {
+    "planned": 9,
+    "sent": 9,
+    "outcomes": {
+      "completed": 9
+    },
+    "pod_distribution": {
+      "api-7bdc9f7744-27vsj": 4,
+      "api-7bdc9f7744-swmgb": 5
+    },
+    "successful_n": 9,
+    "error_ratio": 0.0,
+    "ttfc_p50": 1.738267000997439,
+    "ttfc_p95": 2.2038267506024565,
+    "duration_p95": 6.000145152400364,
+    "max_send_lag": 0.009569148081936873
+  },
+  "A-forced": {
+    "planned": 1,
+    "sent": 1,
+    "outcomes": {
+      "aborted": 1
+    },
+    "pod_distribution": {
+      "api-74989fd4c4-5z7hk": 1
+    },
+    "successful_n": 0,
+    "error_ratio": 1.0,
+    "ttfc_p50": null,
+    "ttfc_p95": null,
+    "duration_p95": null,
+    "max_send_lag": 2.62079993262887e-05
+  },
+  "A-forced-recovery": {
+    "planned": 22,
+    "sent": 22,
+    "outcomes": {
+      "completed": 22
+    },
+    "pod_distribution": {
+      "api-74989fd4c4-v8z84": 14,
+      "api-74989fd4c4-5z7hk": 8
+    },
+    "successful_n": 22,
+    "error_ratio": 0.0,
+    "ttfc_p50": 1.4698903130010876,
+    "ttfc_p95": 4.1682449544037805,
+    "duration_p95": 6.02573436755265,
+    "max_send_lag": 0.055730892570863944
+  },
+  "A-probes-broken": {
+    "planned": 110,
+    "sent": 110,
+    "outcomes": {
+      "http_error": 30,
+      "completed": 80
+    },
+    "pod_distribution": {
+      "api-778dff8fcc-lrc8w": 54,
+      "api-778dff8fcc-5qs8n": 56
+    },
+    "successful_n": 80,
+    "error_ratio": 0.2727272727272727,
+    "ttfc_p50": 0.33281554150016746,
+    "ttfc_p95": 0.620708353896407,
+    "duration_p95": 0.8965558687967131,
+    "max_send_lag": 0.049386781771318056
+  },
+  "A-probes-fixed": {
+    "planned": 110,
+    "sent": 110,
+    "outcomes": {
+      "completed": 110
+    },
+    "pod_distribution": {
+      "api-d5f79b448-s9t8v": 15,
+      "api-d5f79b448-ts5rt": 35,
+      "api-67f64b5876-rc9wg": 45,
+      "api-67f64b5876-6knvm": 15
+    },
+    "successful_n": 110,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.3199008750016219,
+    "ttfc_p95": 0.5637765838499035,
+    "duration_p95": 0.8468391607515513,
+    "max_send_lag": 0.051289006587467156
+  },
+  "A-rollout": {
+    "planned": 15,
+    "sent": 15,
+    "outcomes": {
+      "completed": 15
+    },
+    "pod_distribution": {
+      "api-6fc545dfd7-vgp72": 5,
+      "api-6fc545dfd7-j2dhk": 1,
+      "api-7bdc9f7744-27vsj": 6,
+      "api-7bdc9f7744-swmgb": 3
+    },
+    "successful_n": 15,
+    "error_ratio": 0.0,
+    "ttfc_p50": 1.5099117089994252,
+    "ttfc_p95": 8.086070886596985,
+    "duration_p95": 11.88771680569987,
+    "max_send_lag": 0.008339890016941354
+  },
+  "B-api-affinity-skew-1": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 336,
+      "rejected": 144
+    },
+    "pod_distribution": {
+      "api-b8bdbcc87-ms52c": 448,
+      "api-b8bdbcc87-rzpxt": 32
+    },
+    "successful_n": 336,
+    "error_ratio": 0.30000000000000004,
+    "ttfc_p50": 4.825708085994847,
+    "ttfc_p95": 5.145935460499459,
+    "duration_p95": 5.423250366999127,
+    "max_send_lag": 0.07378629978484241
+  },
+  "B-api-affinity-skew-2": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 338,
+      "rejected": 142
+    },
+    "pod_distribution": {
+      "api-847dc88669-5h9dp": 448,
+      "api-847dc88669-467cc": 32
+    },
+    "successful_n": 338,
+    "error_ratio": 0.2958333333333333,
+    "ttfc_p50": 4.827345752499241,
+    "ttfc_p95": 5.147890798301887,
+    "duration_p95": 5.436338864448407,
+    "max_send_lag": 0.06674233702506172
+  },
+  "B-api-affinity-skew-3": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 380,
+      "rejected": 100
+    },
+    "pod_distribution": {
+      "api-559d6c9566-nc9lr": 416,
+      "api-559d6c9566-wtmwt": 64
+    },
+    "successful_n": 380,
+    "error_ratio": 0.20833333333333337,
+    "ttfc_p50": 4.58769848099837,
+    "ttfc_p95": 4.829251101999034,
+    "duration_p95": 5.107666033555143,
+    "max_send_lag": 0.06633721182879526
+  },
+  "B-api-affinity-uniform-1": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-7b868ddf86-28skt": 240,
+      "api-7b868ddf86-zdcnl": 240
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.11189356250179117,
+    "ttfc_p95": 0.3753703934482466,
+    "duration_p95": 0.6504783979496999,
+    "max_send_lag": 0.010466405670740642
+  },
+  "B-api-affinity-uniform-2": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 367,
+      "rejected": 113
+    },
+    "pod_distribution": {
+      "api-5d79765579-xc2pr": 360,
+      "api-5d79765579-kzkfs": 120
+    },
+    "successful_n": 367,
+    "error_ratio": 0.23541666666666672,
+    "ttfc_p50": 5.298409210998216,
+    "ttfc_p95": 7.08154871099905,
+    "duration_p95": 7.361634661098651,
+    "max_send_lag": 0.025975102420488838
+  },
+  "B-api-affinity-uniform-3": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 367,
+      "rejected": 113
+    },
+    "pod_distribution": {
+      "api-6dc5578b55-bxqkk": 120,
+      "api-6dc5578b55-c8x8d": 360
+    },
+    "successful_n": 367,
+    "error_ratio": 0.23541666666666672,
+    "ttfc_p50": 5.29712825200113,
+    "ttfc_p95": 7.062395865599683,
+    "duration_p95": 7.3458376912974925,
+    "max_send_lag": 0.011587849461648148
+  },
+  "B-api-fixed-skew-1": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-6d894bf957-c2tfj": 226,
+      "api-6d894bf957-llhtf": 254
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.5369196875035414,
+    "ttfc_p95": 1.8284196866938138,
+    "duration_p95": 2.1036588138027574,
+    "max_send_lag": 0.06654492057714378
+  },
+  "B-api-fixed-skew-2": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-74d8989bc-w9tn6": 248,
+      "api-74d8989bc-lc66w": 232
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.4278151045036793,
+    "ttfc_p95": 1.3158270402018388,
+    "duration_p95": 1.5735181464511692,
+    "max_send_lag": 0.07274208935268689
+  },
+  "B-api-fixed-skew-3": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-b4d8b8bb7-8cmmx": 254,
+      "api-b4d8b8bb7-w9fq2": 226
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.4382941874973767,
+    "ttfc_p95": 1.5236423867499977,
+    "duration_p95": 1.79481859509724,
+    "max_send_lag": 0.04941906197927892
+  },
+  "B-api-skew-1": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-59b678b7b9-dk6ww": 236,
+      "api-59b678b7b9-c4jtp": 244
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.5078762920056761,
+    "ttfc_p95": 1.933134308696389,
+    "duration_p95": 2.2111871610948577,
+    "max_send_lag": 0.058194194731186144
+  },
+  "B-api-skew-2": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-85f586569c-tssj6": 242,
+      "api-85f586569c-8twt4": 238
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.3655773965001572,
+    "ttfc_p95": 1.1221313426551198,
+    "duration_p95": 1.3986940527549439,
+    "max_send_lag": 0.06524794243159704
+  },
+  "B-api-skew-3": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 480
+    },
+    "pod_distribution": {
+      "api-7bf4f49949-dgtn5": 239,
+      "api-7bf4f49949-fhf2s": 241
+    },
+    "successful_n": 480,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.5933970629994292,
+    "ttfc_p95": 2.1159635572508697,
+    "duration_p95": 2.391862921500068,
+    "max_send_lag": 0.06387101153086405
+  },
+  "B-api-uniform-1": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 472,
+      "rejected": 8
+    },
+    "pod_distribution": {
+      "api-7697c46dc9-zcqfh": 238,
+      "api-7697c46dc9-g99s2": 242
+    },
+    "successful_n": 472,
+    "error_ratio": 0.01666666666666672,
+    "ttfc_p50": 3.6966941684986523,
+    "ttfc_p95": 6.382094960852555,
+    "duration_p95": 6.6509757197,
+    "max_send_lag": 0.009423285257071257
+  },
+  "B-api-uniform-2": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 464,
+      "rejected": 16
+    },
+    "pod_distribution": {
+      "api-7f68564bf4-s5lj2": 234,
+      "api-7f68564bf4-skhlz": 246
+    },
+    "successful_n": 464,
+    "error_ratio": 0.033333333333333326,
+    "ttfc_p50": 3.825669105997804,
+    "ttfc_p95": 6.660975718100598,
+    "duration_p95": 6.933563070000309,
+    "max_send_lag": 0.011038435724913143
+  },
+  "B-api-uniform-3": {
+    "planned": 480,
+    "sent": 480,
+    "outcomes": {
+      "completed": 477,
+      "rejected": 3
+    },
+    "pod_distribution": {
+      "api-5877dc96fb-dmjrh": 241,
+      "api-5877dc96fb-24z9h": 239
+    },
+    "successful_n": 477,
+    "error_ratio": 0.006249999999999978,
+    "ttfc_p50": 2.228425834000518,
+    "ttfc_p95": 5.8609167280024845,
+    "duration_p95": 6.134734902401396,
+    "max_send_lag": 0.011609345609031152
+  },
+  "C-alert-load": {
+    "planned": 1710,
+    "sent": 1710,
+    "outcomes": {
+      "completed": 362,
+      "rejected": 1348
+    },
+    "pod_distribution": {
+      "api-856d4b6b96-f275n": 1596,
+      "api-856d4b6b96-t7hd7": 114
+    },
+    "successful_n": 362,
+    "error_ratio": 0.7883040935672514,
+    "ttfc_p50": 4.711821897501068,
+    "ttfc_p95": 5.219142306495632,
+    "duration_p95": 5.506979892251548,
+    "max_send_lag": 0.07872227913321694
+  },
+  "C-alert-recovery": {
+    "planned": 75,
+    "sent": 75,
+    "outcomes": {
+      "completed": 75
+    },
+    "pod_distribution": {
+      "api-856d4b6b96-t7hd7": 37,
+      "api-856d4b6b96-f275n": 38
+    },
+    "successful_n": 75,
+    "error_ratio": 0.0,
+    "ttfc_p50": 0.314852791998419,
+    "ttfc_p95": 0.3512802456993086,
+    "duration_p95": 0.6328315672013559,
+    "max_send_lag": 0.033927183496416546
+  },
+  "C-hpa-load": {
+    "planned": 840,
+    "sent": 840,
+    "outcomes": {
+      "completed": 542,
+      "rejected": 298
+    },
+    "pod_distribution": {
+      "api-676694f5dd-fbn8g": 672,
+      "api-676694f5dd-vtd4d": 168
+    },
+    "successful_n": 542,
+    "error_ratio": 0.3547619047619047,
+    "ttfc_p50": 4.548191606001637,
+    "ttfc_p95": 4.736388828103736,
+    "duration_p95": 5.0223810317962485,
+    "max_send_lag": 0.0678414364301716
+  }
+}

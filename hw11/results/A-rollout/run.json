@@ -1,0 +1,11 @@
+{
+  "start_wall": 1794769502.6228821,
+  "duration": 75,
+  "rate": 0.2,
+  "scenario": "uniform",
+  "service": "api",
+  "clients": 1,
+  "keepalive": false,
+  "request_timeout": 60,
+  "cache_initial_state": "see phase"
+}

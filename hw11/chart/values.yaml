@@ -1,0 +1,25 @@
+image: mlops-hw11:0.1.0
+replicas: 2
+modelVersion: A
+warmupSeconds: 20
+brokenProbes: false
+failWarmup: false
+concurrency: 1
+queueSize: 12
+queueTimeout: 15
+cacheSize: 8
+hitIterations: 100000
+missIterations: 900000
+chunkIterations: 50000
+chunkDelay: 0.08
+resources:
+  requests:
+    cpu: 100m
+    memory: 96Mi
+  limits:
+    cpu: 600m
+    memory: 192Mi
+hpa:
+  enabled: false
+  targetCPU: 70
+  scaleDownSeconds: 60
