@@ -1,0 +1,175 @@
+{{- $artifact := dict "model_id" .Values.modelVersion "backend_mode" "simulated" | toJson }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hw11-artifact-{{ .Values.modelVersion | lower }}
+data:
+  model.json: {{ $artifact | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 3
+  minReadySeconds: 3
+  progressDeadlineSeconds: 180
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: hw11-api
+  template:
+    metadata:
+      labels:
+        app: hw11-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: api
+          image: {{ .Values.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MODEL_VERSION
+              value: {{ .Values.modelVersion | quote }}
+            - name: ARTIFACT_PATH
+              value: /models/model.json
+            - name: ARTIFACT_SHA
+              value: {{ $artifact | sha256sum | quote }}
+            {{- range $name, $value := dict "WARMUP_SECONDS" .Values.warmupSeconds "BROKEN_PROBES" .Values.brokenProbes "FAIL_WARMUP" .Values.failWarmup "CONCURRENCY" .Values.concurrency "QUEUE_SIZE" .Values.queueSize "QUEUE_TIMEOUT" .Values.queueTimeout "CACHE_SIZE" .Values.cacheSize "HIT_ITERATIONS" .Values.hitIterations "MISS_ITERATIONS" .Values.missIterations "CHUNK_ITERATIONS" .Values.chunkIterations "CHUNK_DELAY" .Values.chunkDelay }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: http
+            periodSeconds: 1
+            failureThreshold: 90
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 1
+            failureThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
+            timeoutSeconds: 2
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - python
+                  - -c
+                  - "import urllib.request,time; urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000/drain',method='POST'),timeout=2).read(); time.sleep(4)"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: model
+              mountPath: /models
+              readOnly: true
+      volumes:
+        - name: model
+          configMap:
+            name: hw11-artifact-{{ .Values.modelVersion | lower }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  selector:
+    app: hw11-api
+  ports:
+    - port: 8000
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-affinity
+spec:
+  selector:
+    app: hw11-api
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+    - port: 8000
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-fixed
+spec:
+  selector:
+    app: hw11-api
+  sessionAffinity: None
+  ports:
+    - port: 8000
+      targetPort: http
+{{- if .Values.hpa.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 2
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.hpa.targetCPU }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.hpa.scaleDownSeconds }}
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 15
+{{- end }}

@@ -1,0 +1,9 @@
+.venv/
+.tools/
+.cache/
+__pycache__/
+.pytest_cache/
+results/*.tmp
+results/attempt*/
+results/requests.jsonl
+results/*/server-sampled.log

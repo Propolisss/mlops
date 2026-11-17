@@ -1,0 +1,16 @@
+{
+  "planned": 1,
+  "sent": 1,
+  "outcomes": {
+    "aborted": 1
+  },
+  "pod_distribution": {
+    "api-74989fd4c4-5z7hk": 1
+  },
+  "successful_n": 0,
+  "error_ratio": 1.0,
+  "ttfc_p50": null,
+  "ttfc_p95": null,
+  "duration_p95": null,
+  "max_send_lag": 2.62079993262887e-05
+}

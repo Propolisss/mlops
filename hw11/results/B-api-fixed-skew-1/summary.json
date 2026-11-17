@@ -1,0 +1,17 @@
+{
+  "planned": 480,
+  "sent": 480,
+  "outcomes": {
+    "completed": 480
+  },
+  "pod_distribution": {
+    "api-6d894bf957-c2tfj": 226,
+    "api-6d894bf957-llhtf": 254
+  },
+  "successful_n": 480,
+  "error_ratio": 0.0,
+  "ttfc_p50": 0.5369196875035414,
+  "ttfc_p95": 1.8284196866938138,
+  "duration_p95": 2.1036588138027574,
+  "max_send_lag": 0.06654492057714378
+}

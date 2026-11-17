@@ -1,0 +1,41 @@
+{
+  "before": {
+    "status": 200,
+    "body": {
+      "request_id": "146367df-5bc6-4748-9140-e1056319bedb",
+      "pod": "api-67f64b5876-4hz8k",
+      "backend_mode": "simulated",
+      "model_id": "A",
+      "artifact_sha256": "0c8fd7998b65136acbd6ea0443bf23fa04deb9125321e5265dccd7b88f6b8608",
+      "answer": "SIMULATED A [0] user: DIALOG-ALPHA-317\nfirst",
+      "output_chunks": 1,
+      "duration_seconds": 0.3105294170018169
+    }
+  },
+  "after": {
+    "status": 200,
+    "body": {
+      "request_id": "92cbbf87-5797-41b3-bda3-a0b624f3c4fc",
+      "pod": "api-67f64b5876-886hs",
+      "backend_mode": "simulated",
+      "model_id": "A",
+      "artifact_sha256": "0c8fd7998b65136acbd6ea0443bf23fa04deb9125321e5265dccd7b88f6b8608",
+      "answer": "SIMULATED A [0] user: DIALOG-ALPHA-317\nassistant: first response\ncontinue",
+      "output_chunks": 1,
+      "duration_seconds": 0.28919704200234264
+    }
+  },
+  "other": {
+    "status": 200,
+    "body": {
+      "request_id": "5d1cabd6-51ab-4017-84af-92c2b8e7e7d1",
+      "pod": "api-67f64b5876-886hs",
+      "backend_mode": "simulated",
+      "model_id": "A",
+      "artifact_sha256": "0c8fd7998b65136acbd6ea0443bf23fa04deb9125321e5265dccd7b88f6b8608",
+      "answer": "SIMULATED A [0] user: DIALOG-BETA-992\ncontinue",
+      "output_chunks": 1,
+      "duration_seconds": 0.29756566700234544
+    }
+  }
+}

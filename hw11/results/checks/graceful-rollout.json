@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "requests": 15,
+  "long_stream_chunks": 32,
+  "long_stream_duration": 40.8200458930005,
+  "long_stream_overlapped_termination": true,
+  "termination_start_wall": 1794769519.0,
+  "long_stream_pod": "api-6fc545dfd7-j2dhk",
+  "rollout_started_wall_estimate": 1794769494.6228821,
+  "estimate_source": "load start_wall minus its 8-second scheduling lead; first-chunk handshake precedes upgrade in runner",
+  "audit_correction": "termination start = deletionTimestamp - deletionGracePeriodSeconds; original data retained"
+}

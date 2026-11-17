@@ -1,0 +1,248 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "annotations": {
+      "deployment.kubernetes.io/revision": "35",
+      "meta.helm.sh/release-name": "hw11",
+      "meta.helm.sh/release-namespace": "hw11"
+    },
+    "creationTimestamp": "2026-11-15T18:44:33Z",
+    "generation": 35,
+    "labels": {
+      "app.kubernetes.io/managed-by": "Helm"
+    },
+    "name": "api",
+    "namespace": "hw11",
+    "resourceVersion": "11974",
+    "uid": "5faec415-73e7-44e5-b7d3-437a9970761e"
+  },
+  "spec": {
+    "minReadySeconds": 3,
+    "progressDeadlineSeconds": 180,
+    "replicas": 2,
+    "revisionHistoryLimit": 3,
+    "selector": {
+      "matchLabels": {
+        "app": "hw11-api"
+      }
+    },
+    "strategy": {
+      "rollingUpdate": {
+        "maxSurge": 1,
+        "maxUnavailable": 0
+      },
+      "type": "RollingUpdate"
+    },
+    "template": {
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/restartedAt": "2026-11-15T22:52:51+03:00",
+          "prometheus.io/port": "8000",
+          "prometheus.io/scrape": "true"
+        },
+        "labels": {
+          "app": "hw11-api"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "POD_NAME",
+                "valueFrom": {
+                  "fieldRef": {
+                    "apiVersion": "v1",
+                    "fieldPath": "metadata.name"
+                  }
+                }
+              },
+              {
+                "name": "MODEL_VERSION",
+                "value": "A"
+              },
+              {
+                "name": "ARTIFACT_PATH",
+                "value": "/models/model.json"
+              },
+              {
+                "name": "ARTIFACT_SHA",
+                "value": "0c8fd7998b65136acbd6ea0443bf23fa04deb9125321e5265dccd7b88f6b8608"
+              },
+              {
+                "name": "BROKEN_PROBES",
+                "value": "false"
+              },
+              {
+                "name": "CACHE_SIZE",
+                "value": "8"
+              },
+              {
+                "name": "CHUNK_DELAY",
+                "value": "0.08"
+              },
+              {
+                "name": "CHUNK_ITERATIONS",
+                "value": "50000"
+              },
+              {
+                "name": "CONCURRENCY",
+                "value": "1"
+              },
+              {
+                "name": "FAIL_WARMUP",
+                "value": "false"
+              },
+              {
+                "name": "HIT_ITERATIONS",
+                "value": "100000"
+              },
+              {
+                "name": "MISS_ITERATIONS",
+                "value": "900000"
+              },
+              {
+                "name": "QUEUE_SIZE",
+                "value": "12"
+              },
+              {
+                "name": "QUEUE_TIMEOUT",
+                "value": "15"
+              },
+              {
+                "name": "WARMUP_SECONDS",
+                "value": "20"
+              }
+            ],
+            "image": "mlops-hw11:0.1.0",
+            "imagePullPolicy": "IfNotPresent",
+            "lifecycle": {
+              "preStop": {
+                "exec": {
+                  "command": [
+                    "python",
+                    "-c",
+                    "import urllib.request,time; urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000/drain',method='POST'),timeout=2).read(); time.sleep(4)"
+                  ]
+                }
+              }
+            },
+            "livenessProbe": {
+              "failureThreshold": 3,
+              "httpGet": {
+                "path": "/health",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 5,
+              "successThreshold": 1,
+              "timeoutSeconds": 2
+            },
+            "name": "api",
+            "ports": [
+              {
+                "containerPort": 8000,
+                "name": "http",
+                "protocol": "TCP"
+              }
+            ],
+            "readinessProbe": {
+              "failureThreshold": 1,
+              "httpGet": {
+                "path": "/ready",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 1,
+              "successThreshold": 1,
+              "timeoutSeconds": 2
+            },
+            "resources": {
+              "limits": {
+                "cpu": "600m",
+                "memory": "192Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "96Mi"
+              }
+            },
+            "securityContext": {
+              "allowPrivilegeEscalation": false,
+              "capabilities": {
+                "drop": [
+                  "ALL"
+                ]
+              },
+              "readOnlyRootFilesystem": true
+            },
+            "startupProbe": {
+              "failureThreshold": 90,
+              "httpGet": {
+                "path": "/startup",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 1,
+              "successThreshold": 1,
+              "timeoutSeconds": 2
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/models",
+                "name": "model",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {
+          "fsGroup": 10001,
+          "runAsNonRoot": true,
+          "runAsUser": 10001
+        },
+        "terminationGracePeriodSeconds": 60,
+        "volumes": [
+          {
+            "configMap": {
+              "defaultMode": 420,
+              "name": "hw11-artifact-a"
+            },
+            "name": "model"
+          }
+        ]
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 2,
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-11-15T19:11:48Z",
+        "lastUpdateTime": "2026-11-15T19:11:48Z",
+        "message": "Deployment has minimum availability.",
+        "reason": "MinimumReplicasAvailable",
+        "status": "True",
+        "type": "Available"
+      },
+      {
+        "lastTransitionTime": "2026-11-15T18:44:33Z",
+        "lastUpdateTime": "2026-11-15T19:53:39Z",
+        "message": "ReplicaSet \"api-6d894bf957\" has successfully progressed.",
+        "reason": "NewReplicaSetAvailable",
+        "status": "True",
+        "type": "Progressing"
+      }
+    ],
+    "observedGeneration": 35,
+    "readyReplicas": 2,
+    "replicas": 2,
+    "updatedReplicas": 2
+  }
+}

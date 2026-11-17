@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ДЗ 11 · Kubernetes под нагрузкой</title>
+<style>
+:root{--bg:#f4f7f8;--surface:#fcfdfd;--text:#172a32;--muted:#4c626c;--link:#165d83;--failure:#a82d31}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:32px 24px 64px}h1{font-size:2rem;line-height:1.2}h2{font-size:1.5rem;margin:48px 0 16px}
+h3{font-size:1.2rem;margin:32px 0 8px}p,li{max-width:74ch}a{color:var(--link);text-underline-offset:3px}
+nav{display:flex;flex-wrap:wrap;gap:16px}nav a{padding:8px 0;min-height:44px}
+.table{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.85rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #cad4d8}th{background:var(--surface)}
+pre{background:var(--surface);padding:16px;overflow-x:auto}code{font-size:.9em}
+figure{margin:24px 0}img{display:block;width:100%;height:auto}figcaption,.meta{color:var(--muted);font-size:.9rem}
+:focus-visible{outline:3px solid var(--link);outline-offset:4px}::selection{background:#c9e3ee}
+@media print{body{background:var(--surface)}nav{display:none}h2{break-after:avoid}figure,tr{break-inside:avoid}}
+</style></head><body><main>
+<h1>Kubernetes под нагрузкой</h1>
+<p>CPU-имитатор сервиса поддержки. Статус опытов: A завершён, B завершён, C завершён. Обновлено: 2026-11-15T21:09:53+00:00.</p>
+<nav aria-label="Разделы"><a href="#a">Прогрев и выпуск</a><a href="#b">Балансировка</a><a href="#c">HPA и алерты</a><a href="#review">Ревью</a></nav>
+<p><a href="README.md">Запуск, ограничения и удаление стенда</a> ·
+<a href="results/summary.json">Машиночитаемый итог</a> · <a href="results/request-files.json">Индекс сырых журналов запросов</a></p>
+<h2 id="a">Прогрев, обновление и откат</h2>
+<p><strong>Гипотеза.</strong> Готовность HTTP раньше завершения прогрева приводит к 503.
+Исходный дефект: brokenProbes=true. Исправление: startup/readiness проверяют прогретый backend,
+liveness проверяет живой HTTP. Прогрев 20 секунд, timeout probes 2 секунды.</p>
+<p>Получено 503 в исходном / исправленном опыте: {&#x27;A-probes-broken&#x27;: 30, &#x27;A-probes-fixed&#x27;: 0}. Полные
+<a href="results/A-probes-broken/requests.jsonl">исходные запросы</a> и
+<a href="results/A-probes-fixed/requests.jsonl">повтор</a>, соответствующие timeline и server.log сохранены рядом.</p>
+<p>RollingUpdate использует maxUnavailable=0 и maxSurge=1. Перед заменой A запущен длинный поток.
+preStop снимает готовность, но продолжает обслуживать остаточный трафик до распространения EndpointSlice.
+Затем Uvicorn завершает активные ответы. Grace period 60 секунд, ожидание Uvicorn 45 секунд.</p>
+<p>B-bad намеренно не проходит прогрев. Её нельзя включать в рабочие endpoints.
+После управляемого отката фактические ответы должны сообщать A. Отдельный SIGKILL
+проверяет обрыв потока и восстановление; нулевые ошибки при SIGKILL не заявляются.</p>
+<p>Артефакт доставляется через ConfigMap, SHA256 и model_id проверяются при загрузке.
+История передаётся в запросе; после замены Pod продолжается тот же диалог, кеш начинается заново.</p>
+<h2 id="b">Привязка к Pod и горячая реплика</h2>
+<p><strong>Гипотеза.</strong> При 80% запросов от одного IP ClientIP перегружает одну реплику,
+хотя у другой остаётся ёмкость. Исправление: Service без sessionAffinity, распределение новых TCP-соединений.
+Состояние диалога не зависит от выбранной реплики.</p>
+<p>Сравниваются одни и те же два backend: concurrency=1, queue=12, LRU=8.
+Hit/miss: 100000/900000 PBKDF2-итераций, каждая часть 50000 итераций и 0.08 секунды паузы.
+Четыре клиента с разными IP, keep-alive выключен. Все сценарии имеют одинаковое open-loop расписание
+для сравниваемых политик, 4 запроса/с, 120 секунд, три повтора. Кеш в начале каждого прогона холодный.</p>
+<p>Случайное распределение обычного Service и размещение ClientIP могут менять перекос между повторами.
+Все полученные прогоны сохраняются, включая случаи без ожидаемого эффекта.
+Ни один результат имитатора не доказывает выигрыш на настоящем inference engine.</p>
+<p>Среднее трёх успешных p95 TTFC: ClientIP 5.041 s, без привязки 1.556 s. Неуспех по всем попыткам: 26.8% и 0.0%. Исправление снизило средний p95 без роста доли неуспеха. Каждый p95 относится к своему прогону; это не объединённый p95 всей серии. Локальность кеша при случайном распределении ухудшается, но очередь может стоить дороже пересчёта.</p>
+<p><strong>Контрпример.</strong> В <a href="results/B-api-affinity-uniform-1/requests.jsonl">ClientIP/uniform, повтор 1</a>
+перекос не возник: по 240 запросов на Pod, два клиентских IP на каждую реплику,
+480/480 завершений и p95 TTFC 0.375 s. В двух остальных uniform-повторах распределение привязок оказалось хуже.
+Таким образом, ClientIP не гарантирует перегрузку при равномерных клиентах.
+При 80% трафика через один IP перекос был во всех трёх ClientIP-повторах.
+Обычный Service в skew-повторе 1 распределил запросы 236/244: новые TCP-соединения
+одного IP могли попадать на разные Pod. Трасса сохраняет client и pod для каждого запроса.</p>
+<div class="table"><table><thead><tr><th>Прогон</th><th>Успех / попытки</th><th>p50 TTFC, s</th><th>p95 TTFC, s</th><th>Неуспех</th></tr></thead><tbody><tr><td><a href="results/A-bad-release/summary.json">A-bad-release</a></td><td>9/9</td><td>1.738</td><td>2.204</td><td>0.0%</td></tr><tr><td><a href="results/A-forced/summary.json">A-forced</a></td><td>0/1</td><td>нет данных</td><td>нет данных</td><td>100.0%</td></tr><tr><td><a href="results/A-forced-recovery/summary.json">A-forced-recovery</a></td><td>22/22</td><td>1.470</td><td>4.168</td><td>0.0%</td></tr><tr><td><a href="results/A-probes-broken/summary.json">A-probes-broken</a></td><td>80/110</td><td>0.333</td><td>0.621</td><td>27.3%</td></tr><tr><td><a href="results/A-probes-fixed/summary.json">A-probes-fixed</a></td><td>110/110</td><td>0.320</td><td>0.564</td><td>0.0%</td></tr><tr><td><a href="results/A-rollout/summary.json">A-rollout</a></td><td>15/15</td><td>1.510</td><td>8.086</td><td>0.0%</td></tr><tr><td><a href="results/B-api-affinity-skew-1/summary.json">B-api-affinity-skew-1</a></td><td>336/480</td><td>4.826</td><td>5.146</td><td>30.0%</td></tr><tr><td><a href="results/B-api-affinity-skew-2/summary.json">B-api-affinity-skew-2</a></td><td>338/480</td><td>4.827</td><td>5.148</td><td>29.6%</td></tr><tr><td><a href="results/B-api-affinity-skew-3/summary.json">B-api-affinity-skew-3</a></td><td>380/480</td><td>4.588</td><td>4.829</td><td>20.8%</td></tr><tr><td><a href="results/B-api-affinity-uniform-1/summary.json">B-api-affinity-uniform-1</a></td><td>480/480</td><td>0.112</td><td>0.375</td><td>0.0%</td></tr><tr><td><a href="results/B-api-affinity-uniform-2/summary.json">B-api-affinity-uniform-2</a></td><td>367/480</td><td>5.298</td><td>7.082</td><td>23.5%</td></tr><tr><td><a href="results/B-api-affinity-uniform-3/summary.json">B-api-affinity-uniform-3</a></td><td>367/480</td><td>5.297</td><td>7.062</td><td>23.5%</td></tr><tr><td><a href="results/B-api-fixed-skew-1/summary.json">B-api-fixed-skew-1</a></td><td>480/480</td><td>0.537</td><td>1.828</td><td>0.0%</td></tr><tr><td><a href="results/B-api-fixed-skew-2/summary.json">B-api-fixed-skew-2</a></td><td>480/480</td><td>0.428</td><td>1.316</td><td>0.0%</td></tr><tr><td><a href="results/B-api-fixed-skew-3/summary.json">B-api-fixed-skew-3</a></td><td>480/480</td><td>0.438</td><td>1.524</td><td>0.0%</td></tr><tr><td><a href="results/B-api-skew-1/summary.json">B-api-skew-1</a></td><td>480/480</td><td>0.508</td><td>1.933</td><td>0.0%</td></tr><tr><td><a href="results/B-api-skew-2/summary.json">B-api-skew-2</a></td><td>480/480</td><td>0.366</td><td>1.122</td><td>0.0%</td></tr><tr><td><a href="results/B-api-skew-3/summary.json">B-api-skew-3</a></td><td>480/480</td><td>0.593</td><td>2.116</td><td>0.0%</td></tr><tr><td><a href="results/B-api-uniform-1/summary.json">B-api-uniform-1</a></td><td>472/480</td><td>3.697</td><td>6.382</td><td>1.7%</td></tr><tr><td><a href="results/B-api-uniform-2/summary.json">B-api-uniform-2</a></td><td>464/480</td><td>3.826</td><td>6.661</td><td>3.3%</td></tr><tr><td><a href="results/B-api-uniform-3/summary.json">B-api-uniform-3</a></td><td>477/480</td><td>2.228</td><td>5.861</td><td>0.6%</td></tr><tr><td><a href="results/C-alert-load/summary.json">C-alert-load</a></td><td>362/1710</td><td>4.712</td><td>5.219</td><td>78.8%</td></tr><tr><td><a href="results/C-alert-recovery/summary.json">C-alert-recovery</a></td><td>75/75</td><td>0.315</td><td>0.351</td><td>0.0%</td></tr><tr><td><a href="results/C-hpa-load/summary.json">C-hpa-load</a></td><td>542/840</td><td>4.548</td><td>4.736</td><td>35.5%</td></tr></tbody></table></div>
+<h2 id="c">HPA, мониторинг и измерения</h2>
+<p><strong>Гипотеза.</strong> Вычислительная нагрузка поднимет среднюю загрузку относительно CPU requests
+выше 70%, HPA увеличит число реплик с 2 до 3. После снятия нагрузки и окна стабилизации 60 секунд
+число вернётся к 2. ClientIP не перераспределяет существующую горячую привязку на новый Pod.</p>
+<p>Три Ready-реплики впервые наблюдались через 63.4 s после начала подачи нагрузки. Возврат к двум репликам наблюдался через 90.9 s после завершения нагрузочного клиента. Это фактическое время вместе с усреднением CPU, окном стабилизации и циклом контроллера. Распределение 840 попыток HPA-опыта по Pod: {&#x27;api-676694f5dd-fbn8g&#x27;: 672, &#x27;api-676694f5dd-vtd4d&#x27;: 168}. Новая ёмкость не получает горячие ClientIP-привязки автоматически; масштабирование само по себе очередь не устраняет.</p>
+<p>Prometheus использует Pod discovery и classic Histogram. Request ID и session ID остаются в журналах;
+в метриках ограниченные outcome/cache result и имена Pod. Дашборд содержит TTFC, полную длительность,
+running/waiting, завершения/с, отказы, CPU/RAM и Ready.</p>
+<p>Алерты: p95 TTFC &gt; 0.8 секунды и неуспех &gt; 5%. Для обоих нужны минимум
+10 наблюдений за 30 секунд и удержание 15 секунд. Timeline сохраняет pending/firing,
+последующий нормальный трафик проверяет возврат в норму.</p>
+<pre><code>histogram_quantile(0.95,
+  sum by (le) (rate(inference_ttfc_seconds_bucket[1m])))</code></pre>
+<p>Клиент считает интервалы монотонными часами. TTFC: от отправки до первой части;
+inter-chunk latency: интервалы между частями. Это не TTFT/TPOT: фактических токенов здесь нет.
+Успех требует HTTP 200, всех частей и завершающей записи done. Отказы, обрывы, тайм-ауты
+и транспортные ошибки учитываются раздельно, автоматических повторов нет.</p>
+<p>В каждом B-прогоне histogram-comparison.json сопоставляет число успешных клиентских ответов
+и серверных наблюдений после последнего scrape. Buckets и сырой клиентский p95 имеют
+разную точность; серверный TTFC также не включает сеть.</p>
+<figure><img src="figures/a-rollout.png" alt="Прогрев, Ready/Endpoints и ответы при rollout A→B."><figcaption>Прогрев, Ready/Endpoints и ответы при rollout A→B.</figcaption></figure><figure><img src="figures/b-queue.png" alt="Очередь и p95 TTFC по Pod при ClientIP и перекосе 80%."><figcaption>Очередь и p95 TTFC по Pod при ClientIP и перекосе 80%.</figcaption></figure><figure><img src="figures/b-policies.png" alt="Сравнение политик: три повтора, 120 секунд каждый."><figcaption>Сравнение политик: три повтора, 120 секунд каждый.</figcaption></figure><figure><img src="figures/c-hpa.png" alt="Число реплик и CPU под нагрузкой и после её снятия."><figcaption>Число реплик и CPU под нагрузкой и после её снятия.</figcaption></figure>
+<h2>Собственные проверки</h2>
+<p><a href="results/unit-tests.txt">Локальные тесты</a> · <a href="results/linux-tests.txt">Linux-тесты</a>.
+Проверки Kubernetes: <a href="results/checks/alerts.json">alerts.json</a>, <a href="results/checks/forced-failure.json">forced-failure.json</a>, <a href="results/checks/graceful-rollout.json">graceful-rollout.json</a>, <a href="results/checks/probes.json">probes.json</a>, <a href="results/checks/replacement-dialogs.json">replacement-dialogs.json</a>, <a href="results/checks/rollback.json">rollback.json</a>.</p>
+<h2 id="review">Ревью: следует ли навсегда закреплять диалог за Pod?</h2>
+<p>При очереди A в 3 секунды и пересчёте префикса на свободной B за 0.8 секунды новый запрос
+выгоднее отправить на B: ожидаемый выигрыш до начала обработки 2.2 секунды при прочих равных.
+Кеш следует учитывать вместе с очередью, свободными слотами и стоимостью пересчёта.
+Постоянная привязка не имеет механизма обхода перегруженной или потерянной реплики.</p>
+<p>Для решения нужны распределения длины входа, hit/miss и eviction, время пересчёта,
+running/waiting, TTFC и ошибки по репликам, стоимость передачи истории, точность оценки
+очереди и измерение при меняющемся трафике. Допуск нового запроса должен ограничивать
+очередь и бюджет ожидания: при исчерпании ёмкости вернуть явный 429 с новой попыткой,
+учитываемой отдельно. Свободный Pod должен означать свободную вычислительную ёмкость.</p>
+<p>История диалога передаётся в запросе или хранится вне Pod; после потери A другой Pod
+восстанавливает диалог и повторно строит кеш. Уже начатый поток остаётся на своей реплике
+до завершения в пределах grace period. Перенаправлять его середину на B нельзя:
+нужны протокол возобновления, идентификаторы частей и дедупликация. При SIGKILL клиент
+фиксирует обрыв и решает вопрос новой попытки, не выдавая частичный ответ за завершённый.</p>
+<p><strong>Кейс из лекции.</strong> На 08:30, слайд 70/224 «Результаты нагрузки Google» (<a href="docs/lecture11-google.jpg">кадр из видео</a>), разбирается Google Vertex AI / GKE Inference Gateway. <a href="https://cloud.google.com/blog/products/containers-kubernetes/how-gke-inference-gateway-improved-latency-for-vertex-ai">How we cut Vertex AI latency by 35% with GKE Inference Gateway</a> объясняет изменение весов prefix:queue:kv-utilization с 3:3:2 на 3:5:2: очередь получает больший вес, и маршрутизатор обходит горячую реплику даже при cache hit. Это поддерживает выбор свободной B вместо ожидания 3 секунды на A. В первоисточнике cache hit вырос с 35% до 70%, p95 TTFT для DeepSeek V3.1 снизился на 52%. Эти результаты относятся к системе Google с настоящими токенами. Наше исправление снимает ClientIP-привязку и проверено по TTFC CPU-имитатора; готовая cache/queue-aware политика и её веса на inference engine здесь не проверялись.</p>
+<h2>Ограничения</h2>
+<p>Один узел kind, четыре CPU, CPU-имитатор, фиксированные входы. Нет GPU/KV-cache,
+continuous batching, prefill/decode disaggregation и настоящих токенов. Потеря узла не
+исследована. Для реальной модели нужно отдельно проверить локальность кеша, доступность
+весов всем репликам, повторяемость версии, производительность и потоковый протокол.
+Без завершённых phase-файлов работа не считается полностью проверенной.</p>
+</main></body></html>

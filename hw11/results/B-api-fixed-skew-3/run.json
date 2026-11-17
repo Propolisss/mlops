@@ -1,0 +1,11 @@
+{
+  "start_wall": 1794772819.0154939,
+  "duration": 120,
+  "rate": 4.0,
+  "scenario": "skew",
+  "service": "api-fixed",
+  "clients": 4,
+  "keepalive": false,
+  "request_timeout": 25,
+  "cache_initial_state": "cold after pod replacement"
+}

@@ -1,0 +1,137 @@
+[
+  {
+    "run": "B-api-affinity-skew-1",
+    "largest_pod_fraction": 0.9333333333333333,
+    "hot_replica_observed": true,
+    "pod_distribution": {
+      "api-b8bdbcc87-ms52c": 448,
+      "api-b8bdbcc87-rzpxt": 32
+    }
+  },
+  {
+    "run": "B-api-affinity-skew-2",
+    "largest_pod_fraction": 0.9333333333333333,
+    "hot_replica_observed": true,
+    "pod_distribution": {
+      "api-847dc88669-5h9dp": 448,
+      "api-847dc88669-467cc": 32
+    }
+  },
+  {
+    "run": "B-api-affinity-skew-3",
+    "largest_pod_fraction": 0.8666666666666667,
+    "hot_replica_observed": true,
+    "pod_distribution": {
+      "api-559d6c9566-nc9lr": 416,
+      "api-559d6c9566-wtmwt": 64
+    }
+  },
+  {
+    "run": "B-api-affinity-uniform-1",
+    "largest_pod_fraction": 0.5,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-7b868ddf86-28skt": 240,
+      "api-7b868ddf86-zdcnl": 240
+    }
+  },
+  {
+    "run": "B-api-affinity-uniform-2",
+    "largest_pod_fraction": 0.75,
+    "hot_replica_observed": true,
+    "pod_distribution": {
+      "api-5d79765579-xc2pr": 360,
+      "api-5d79765579-kzkfs": 120
+    }
+  },
+  {
+    "run": "B-api-affinity-uniform-3",
+    "largest_pod_fraction": 0.75,
+    "hot_replica_observed": true,
+    "pod_distribution": {
+      "api-6dc5578b55-bxqkk": 120,
+      "api-6dc5578b55-c8x8d": 360
+    }
+  },
+  {
+    "run": "B-api-fixed-skew-1",
+    "largest_pod_fraction": 0.5291666666666667,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-6d894bf957-c2tfj": 226,
+      "api-6d894bf957-llhtf": 254
+    }
+  },
+  {
+    "run": "B-api-fixed-skew-2",
+    "largest_pod_fraction": 0.5166666666666667,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-74d8989bc-w9tn6": 248,
+      "api-74d8989bc-lc66w": 232
+    }
+  },
+  {
+    "run": "B-api-fixed-skew-3",
+    "largest_pod_fraction": 0.5291666666666667,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-b4d8b8bb7-8cmmx": 254,
+      "api-b4d8b8bb7-w9fq2": 226
+    }
+  },
+  {
+    "run": "B-api-skew-1",
+    "largest_pod_fraction": 0.5083333333333333,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-59b678b7b9-dk6ww": 236,
+      "api-59b678b7b9-c4jtp": 244
+    }
+  },
+  {
+    "run": "B-api-skew-2",
+    "largest_pod_fraction": 0.5041666666666667,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-85f586569c-tssj6": 242,
+      "api-85f586569c-8twt4": 238
+    }
+  },
+  {
+    "run": "B-api-skew-3",
+    "largest_pod_fraction": 0.5020833333333333,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-7bf4f49949-dgtn5": 239,
+      "api-7bf4f49949-fhf2s": 241
+    }
+  },
+  {
+    "run": "B-api-uniform-1",
+    "largest_pod_fraction": 0.5041666666666667,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-7697c46dc9-zcqfh": 238,
+      "api-7697c46dc9-g99s2": 242
+    }
+  },
+  {
+    "run": "B-api-uniform-2",
+    "largest_pod_fraction": 0.5125,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-7f68564bf4-s5lj2": 234,
+      "api-7f68564bf4-skhlz": 246
+    }
+  },
+  {
+    "run": "B-api-uniform-3",
+    "largest_pod_fraction": 0.5020833333333333,
+    "hot_replica_observed": false,
+    "pod_distribution": {
+      "api-5877dc96fb-dmjrh": 241,
+      "api-5877dc96fb-24z9h": 239
+    }
+  }
+]

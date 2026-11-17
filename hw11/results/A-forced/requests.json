@@ -1,0 +1,30 @@
+[
+  {
+    "index": 0,
+    "offset": 0,
+    "client": 3,
+    "prompt": "forced-kill",
+    "max_new_tokens": 32,
+    "run": "forced",
+    "request_id": "forced-0-2157be94",
+    "planned_wall": 1794769882.2224228,
+    "sent_wall": 1794769882.2224612,
+    "planned_monotonic": 45431.936790479,
+    "sent_monotonic": 45431.936816687,
+    "send_lag_seconds": 2.62079993262887e-05,
+    "status": 200,
+    "outcome": "aborted",
+    "pod": "api-74989fd4c4-5z7hk",
+    "model_id": "A",
+    "backend_mode": "simulated",
+    "chunks": 2,
+    "first_monotonic": 45432.807986896,
+    "completed_monotonic": 45433.868369896,
+    "ttfc_seconds": 0.871170209000411,
+    "duration_seconds": 1.9315532090040506,
+    "inter_chunk_seconds": [
+      0.6109594170047785
+    ],
+    "error": "RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)"
+  }
+]
